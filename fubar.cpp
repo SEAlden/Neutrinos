@@ -15,11 +15,11 @@ int main(){
 
 
     TFile* nue = TFile::Open("t2kflux_2016_minus250kA.root");
-    TH1D* Data = (TH1D*)nue->Get("enu_sk_numu");;// Read in data
+    TH1D* t2k = (TH1D*)nue->Get("enu_sk_numu");// Read in data
     
-     TH1D* Osci = new TH1D("Neutrinos","-250 kA PMNS; Energy [GeV]; Counts", 300, 0.2, 3.0);
+    TH1* Osci = new TH1D("Neutrinos","-250 kA PMNS; Energy [GeV]; Counts", 220, 0.2, 3.0);
 
-    Nu_Fitter Test(Data, Osci, 1);
+    Nu_Fitter Test(t2k, Osci, 1);
     Test.make_Prediction();
     
     std::cout << Test.getLLH() << std::endl;

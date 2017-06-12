@@ -42,17 +42,17 @@ class Nu_Fitter{
 
 public:
     
-    Nu_Fitter(TH1D* Data, TH1D* Prediction, int kNuBarVar);
+    Nu_Fitter(TH1D* Data, TH1* Prediction, int kNuBarVar);
     ~Nu_Fitter();
     // get data & get prediction === copy constructor for existing objects
-    TH1D* make_Prediction();
+    TH1* make_Prediction();
     void swap();
     void print_kNu();
     double getLLH();
     
 protected:
     TH1D* _Data;
-    TH1D* _Prediction;
+    TH1* _Prediction;
     bool kSquared;   // using sin^2(x) variables?
     double DM2;
     double Theta23;
@@ -64,8 +64,7 @@ protected:
     double BasePath; //km
     double Density;
     int nbin;
-    double bin_content;
-
+   
 };
 
 
