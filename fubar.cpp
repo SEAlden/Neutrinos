@@ -21,6 +21,8 @@ int main(){
 
     Nu_Fitter Test(muon_nu, Osci, 1);
     
+    int i;
+    
     
     
 
