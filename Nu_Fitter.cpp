@@ -34,12 +34,16 @@
 #include "TMath.h"
 #include "TRandom3.h"
 
-Nu_Fitter::Nu_Fitter(TH1D* Data, TH1D* Prediction, int kNuBarVar){
+#include <string>
 
-
-
-    _Data = (TH1D*)Data->Clone("Oscillation");
-    _Prediction = (TH1D*)Prediction->Clone("Prob");
+Nu_Fitter::Nu_Fitter(int kNuBarVar, std::string path, std::string filename){
+    
+    _path = path;
+    _filename = filename;
+    TFile* nue = new TFile(_path.c_str());
+    TH1D* t2k = (TH1D*)nue->Get(_filename.c_str());
+    _Data = (TH1D*)t2k->Clone("Oscillation");
+    _Prediction = (TH1D*)t2k->Clone("Prob");
     kSquared  = true; // hard coded for now
     DM2     =  2.4e-3;
     Theta23 =  0.5   ;
@@ -50,75 +54,70 @@ Nu_Fitter::Nu_Fitter(TH1D* Data, TH1D* Prediction, int kNuBarVar){
     Density = 2.3;
     kNuBar = kNuBarVar;// switch between neutrino and anti
     nbin  = _Data->GetNbinsX();
-
-
+    
+    
 }
 
 Nu_Fitter::~Nu_Fitter(){}
 
 void Nu_Fitter::make_Prediction(){
-
+    
     BargerPropagator   * bNu;
-
+    
     bNu = new BargerPropagator( );
     bNu->UseMassEigenstates( false );
-
+    
     double E,osci_prob,bin_content,weight;
-
+    
     int count = 0;
     for ( int i = 1; i<=nbin; i++){
-
+        
         count++;
         E = _Data->GetXaxis()->GetBinCenter(i);
-
+        
         bNu->SetMNS( Theta12,  Theta13, Theta23, dm2, DM2, delta , E, kSquared, kNuBar );
-
+        
         bNu->propagateLinear( 1*kNuBar, BasePath, Density );
-
+        
         osci_prob = bNu->GetProb(2,2);// hard coding flavour for now;
         bin_content = _Data->GetBinContent(i);
         weight = osci_prob*bin_content;
-
+        
         _Prediction->SetBinContent(i,weight);
-        std::cout << "Probability: " << osci_prob << "\tData: " << _Data->GetBinContent(i) << "\tPrediction: " << _Prediction->GetBinContent(i) << std::endl;
-
-
+        }
     }
-    std::cout << "count " << count << std::endl;
-
-}
 
 void Nu_Fitter::swap(){
-
+    
     kNuBar = -1*kNuBar;
 }
 
 void Nu_Fitter::print_kNu(){
-
+    
     if(kNuBar ==1){
         std::cout << "Neutrino" << std::endl;
     }
     else if(kNuBar == -1){
-
+        
         std::cout << "Anti-neutrino" << std::endl;
     }
 }
 
 double Nu_Fitter::getLLH(){
-
+    
     double LLH = 0;
-
+    
     for(int j = 1; j<=nbin; j++){
-
+        
         double lambda = _Prediction->GetBinContent(j);
         double N = _Data->GetBinContent(j);
-
+        
         if(N!=0){ // to prevent nan at later bins(higher energies) with 0 entries
-          LLH += lambda-N - N*log(lambda/N);
+            LLH += lambda-N - N*log(lambda/N);
         }
-
+        
     }
-
+    
     return LLH;
-
+    
 }

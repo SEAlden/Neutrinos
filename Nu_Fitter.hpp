@@ -38,18 +38,20 @@
 
 #include <stdio.h>
 
+#include <string>
+
 class Nu_Fitter{
-
+    
 public:
-
-    Nu_Fitter(TH1D* Data, TH1D* Prediction, int kNuBarVar);
+    
+    Nu_Fitter(int kNuBarVar, std::string path, std::string filename);
     ~Nu_Fitter();
-    // get data & get prediction === copy constructor for existing objects
+ 
     void make_Prediction();
     void swap();
     void print_kNu();
     double getLLH();
-
+    
 protected:
     TH1D* _Data;
     TH1D* _Prediction;
@@ -64,6 +66,8 @@ protected:
     double BasePath; //km
     double Density;
     int nbin;
+    std::string _path;
+    std::string _filename;
 
 };
 
