@@ -41,19 +41,22 @@
 #include <string>
 
 class Nu_Fitter{
-
+    
 public:
-
+    
     Nu_Fitter(int kNuBarVar, std::string path, std::string filename);
+    Nu_Fitter(int kNuBarVar, std::string path, std::string filename, std::string filename2);
     ~Nu_Fitter();
-
-    void make_Prediction(int nu_in, int nu_out);
+ 
+    void make_Prediction(int in_nu, int out_nu);
+    void make_sum(int in_nu, int out_nu);
     void swap();
     void print_kNu();
     double getLLH();
-
+    
 protected:
     TH1D* _Data;
+    TH1D* _Data2;
     TH1D* _Prediction;
     bool kSquared;   // using sin^2(x) variables?
     double DM2;
@@ -68,6 +71,7 @@ protected:
     int nbin;
     std::string _path;
     std::string _filename;
+    std::string _filename2;
 
 };
 
