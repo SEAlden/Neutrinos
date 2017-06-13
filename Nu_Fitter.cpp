@@ -34,12 +34,12 @@
 #include "TMath.h"
 #include "TRandom3.h"
 
-Nu_Fitter::Nu_Fitter(TH1D* Data, TH1* Prediction, int kNuBarVar){
+Nu_Fitter::Nu_Fitter(TH1D* Data, TH1D* Prediction, int kNuBarVar){
 
 
 
     _Data = (TH1D*)Data->Clone("Oscillation");
-    _Prediction = (TH1*)Prediction->Clone("Prob");
+    _Prediction = (TH1D*)Prediction->Clone("Prob");
     kSquared  = true; // hard coded for now
     DM2     =  2.4e-3;
     Theta23 =  0.5   ;
@@ -64,7 +64,7 @@ TH1*   Nu_Fitter::make_Prediction(){
     
     bNu = new BargerPropagator( );
     bNu->UseMassEigenstates( false );
-    
+    std::cout << nbin << std::endl;
     int count = 0;
     for ( int i = 1; i<=nbin; i++){
         count++;
@@ -79,9 +79,9 @@ TH1*   Nu_Fitter::make_Prediction(){
         double osci_prob = bNu->GetProb(2,2);// hard coding flavour for now;
         
         double bin_content = _Data->GetBinContent(i);
-  
+        //std::cout << "i " << i << "E " << E << " bin cont " << bin_content  << " osci prob " << osci_prob << std::endl;
         double weight = osci_prob*bin_content;
-              std::cout << "i " << i << " E " << E << " bin cont " << bin_content  << " osci prob " << osci_prob << " weight " << weight  << std::endl;
+        
         _Prediction->Fill(E,weight);
         std::cout << _Prediction->GetBinContent(i) << std::endl;
         
@@ -111,16 +111,15 @@ void Nu_Fitter::print_kNu(){
 double Nu_Fitter::getLLH(){
     
     double LLH = 0;
-    //make_Prediction();
-
+	
     for(int j = 1; j<=nbin; j++){
-    
         
         double lambda = _Prediction->GetBinContent(j);
         double N = _Data->GetBinContent(j);
-        //std::cout << j << " " << lambda <<  " " << N << std::endl;
-        LLH+= lambda-N - N*log(lambda/N);
-    
+        std::cout << j << " " << lambda <<  " " << N << std::endl;
+        if(lambda!=0){
+            LLH+= lambda-N - N*log(lambda/N);
+        }
         //std::cout << j << " " << LLH <<std::endl;
     }
     
