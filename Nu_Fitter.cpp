@@ -2,8 +2,8 @@
 //  Nu_Fitter.cpp
 //  Neutrinos
 //
-//  Created by Siobhan Alden on 12/06/2017.
-//  Copyright © 2017 Siobhan Alden. All rights reserved.
+//  Created by Siobhan Alden & Andrew Yong on 12/06/2017.
+//  Copyright © 2017 Siobhan Alden & Andrew Yong. All rights reserved.
 //
 
 #include "Nu_Fitter.hpp"
@@ -50,46 +50,42 @@ Nu_Fitter::Nu_Fitter(TH1D* Data, TH1D* Prediction, int kNuBarVar){
     Density = 2.3;
     kNuBar = kNuBarVar;// switch between neutrino and anti
     nbin  = _Data->GetNbinsX();
-    
 
-    
 
 }
 
 Nu_Fitter::~Nu_Fitter(){}
 
-TH1*   Nu_Fitter::make_Prediction(){
+void Nu_Fitter::make_Prediction(){
 
     BargerPropagator   * bNu;
-    
+
     bNu = new BargerPropagator( );
     bNu->UseMassEigenstates( false );
-    std::cout << nbin << std::endl;
+
+    double E,osci_prob,bin_content,weight;
+
     int count = 0;
     for ( int i = 1; i<=nbin; i++){
+
         count++;
-        double E = _Data->GetXaxis()->GetBinCenter(i);
-        //std::cout << "i " << i  << std::endl;
-        
-//        std::cout <<Theta12 << " " <<  Theta13 << " " << Theta23 << " " << dm2 << " " << DM2 << " " << delta << " " << E << " " <<  kSquared << " " <<  kNuBar << std::endl;
+        E = _Data->GetXaxis()->GetBinCenter(i);
+
         bNu->SetMNS( Theta12,  Theta13, Theta23, dm2, DM2, delta , E, kSquared, kNuBar );
-        
+
         bNu->propagateLinear( 1*kNuBar, BasePath, Density );
-   
-        double osci_prob = bNu->GetProb(2,2);// hard coding flavour for now;
-        
-        double bin_content = _Data->GetBinContent(i);
-        //std::cout << "i " << i << "E " << E << " bin cont " << bin_content  << " osci prob " << osci_prob << std::endl;
-        double weight = osci_prob*bin_content;
-        
-        _Prediction->Fill(E,weight);
-        std::cout << _Prediction->GetBinContent(i) << std::endl;
-        
-        
+
+        osci_prob = bNu->GetProb(2,2);// hard coding flavour for now;
+        bin_content = _Data->GetBinContent(i);
+        weight = osci_prob*bin_content;
+
+        _Prediction->SetBinContent(i,weight);
+        std::cout << "Probability: " << osci_prob << "\tData: " << _Data->GetBinContent(i) << "\tPrediction: " << _Prediction->GetBinContent(i) << std::endl;
+
+
     }
-    std::cout << " count " << count << std::endl;
-    return _Prediction;
- 
+    std::cout << "count " << count << std::endl;
+
 }
 
 void Nu_Fitter::swap(){
@@ -98,36 +94,31 @@ void Nu_Fitter::swap(){
 }
 
 void Nu_Fitter::print_kNu(){
-    
+
     if(kNuBar ==1){
         std::cout << "Neutrino" << std::endl;
     }
     else if(kNuBar == -1){
-    
+
         std::cout << "Anti-neutrino" << std::endl;
     }
 }
 
 double Nu_Fitter::getLLH(){
-    
+
     double LLH = 0;
-	
+
     for(int j = 1; j<=nbin; j++){
-        
+
         double lambda = _Prediction->GetBinContent(j);
         double N = _Data->GetBinContent(j);
-        std::cout << j << " " << lambda <<  " " << N << std::endl;
-        if(lambda!=0){
-            LLH+= lambda-N - N*log(lambda/N);
+
+        if(N!=0){ // to prevent nan at later bins(higher energies) with 0 entries
+          LLH += lambda-N - N*log(lambda/N);
         }
-        //std::cout << j << " " << LLH <<std::endl;
+
     }
-    
+
     return LLH;
-    
+
 }
-
-
-
-
-

@@ -1,9 +1,9 @@
 //
-//  Nu_Fitter.hpp
+//  Nu_Fitter.cpp
 //  Neutrinos
 //
-//  Created by Siobhan Alden on 12/06/2017.
-//  Copyright © 2017 Siobhan Alden. All rights reserved.
+//  Created by Siobhan Alden & Andrew Yong on 12/06/2017.
+//  Copyright © 2017 Siobhan Alden & Andrew Yong. All rights reserved.
 //
 
 #ifndef Nu_Fitter_hpp
@@ -41,18 +41,18 @@
 class Nu_Fitter{
 
 public:
-    
+
     Nu_Fitter(TH1D* Data, TH1D* Prediction, int kNuBarVar);
     ~Nu_Fitter();
     // get data & get prediction === copy constructor for existing objects
-    TH1* make_Prediction();
+    void make_Prediction();
     void swap();
     void print_kNu();
     double getLLH();
-    
+
 protected:
     TH1D* _Data;
-    TH1* _Prediction;
+    TH1D* _Prediction;
     bool kSquared;   // using sin^2(x) variables?
     double DM2;
     double Theta23;
@@ -64,10 +64,8 @@ protected:
     double BasePath; //km
     double Density;
     int nbin;
-    double bin_content;
 
 };
 
 
 #endif /* Nu_Fitter_hpp */
-
