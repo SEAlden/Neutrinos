@@ -133,7 +133,7 @@ void Nu_Fitter::make_sum(int in_nu, int out_nu){
     bNu = new BargerPropagator( );
     bNu->UseMassEigenstates( false );
     
-    double E,osci_prob,bin_content,weight;
+    double E,osci_prob,bin_content,bin_content2 ,weight;
     
     if(abs(in_nu) >=3 || abs(out_nu) >=3 || abs(in_nu) <=3 || abs(out_nu) <=3){ // basic error handling
         std::cout << " Error: neutrino must be labelled with 1,2,3. \nPrediction histogram not created." << std::endl;
