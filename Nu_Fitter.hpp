@@ -17,6 +17,7 @@
 
 #include "TFile.h"
 #include "TH1D.h"
+#include "TApplication.h"
 
 #include <cstdlib>
 #include <ctime>
@@ -41,19 +42,21 @@
 #include <string>
 
 class Nu_Fitter{
-    
+
 public:
-    
-    Nu_Fitter(int kNuBarVar, std::string path, std::string filename);
-    Nu_Fitter(int kNuBarVar, std::string path, std::string filename, std::string filename2);
+
+    Nu_Fitter(int kNuBarVar, std::string path, std::string filename); // takes the data from a file
+    Nu_Fitter(int kNuBarVar, std::string path, std::string filename, std::string filename2); // overloaded constructor: takes data from two files instead
     ~Nu_Fitter();
- 
-    void make_Prediction(int in_nu, int out_nu);
-    void make_sum(int in_nu, int out_nu);
-    void swap();
-    void print_kNu();
-    double getLLH();
-    
+
+    void make_Prediction(int in_nu, int out_nu); // creates the predicted histogram by applying probabilities to file data
+    void make_sum(int in_nu, int out_nu); // applies probability to histogram of both files, predicted histogram will take the sum of the updated histograms
+    void swap(); // swaps kNuBar between 1(neutrino) and -1(antineutrino)
+    void print_kNu(); //tells user what value kNuBar has at the moment
+    double getLLH(); // calculates the log likelihood
+
+    void show_Prediction(); // show the prediction histogram for analysis
+
 protected:
     TH1D* _Data;
     TH1D* _Data2;
