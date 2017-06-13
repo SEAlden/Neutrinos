@@ -41,17 +41,17 @@
 #include <string>
 
 class Nu_Fitter{
-    
+
 public:
-    
+
     Nu_Fitter(int kNuBarVar, std::string path, std::string filename);
     ~Nu_Fitter();
- 
-    void make_Prediction();
+
+    void make_Prediction(int nu_in, int nu_out);
     void swap();
     void print_kNu();
     double getLLH();
-    
+
 protected:
     TH1D* _Data;
     TH1D* _Prediction;
