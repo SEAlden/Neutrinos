@@ -13,19 +13,20 @@
 #include "Nu_Fitter.hpp"
 #include "Nu_Fitter.cpp"
 #include <iostream>
+#include <vector>
 
 class Disappearance : public Nu_Fitter {
     
 public:
     
-    Disappearance(int kNuBarVar, std::string path, std::string filename, std::string filename2, int mass);
+    Disappearance(int kNuBarVar, std::string path, std::string filename, std::string filename2, std::string filename3, std::string filename4, int mass);
     ~Disappearance();
-    void make_Prediction(int n, int which, int heirachy);
-    double series(int n, double E, int heirachy);
+    void make_Prediction(char hist_type, int which);
+    double series( double E);
     double fact(int n);
-    double approx(double E, int heirachy);
+    double approx( double E);
     //void mass(int heirachy);
-    double osci_prob(double E, int heirachy);
+    double osci_prob( double E);
     
 private:
     

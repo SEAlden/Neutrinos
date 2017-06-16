@@ -43,18 +43,18 @@
 using namespace std;
 
 class Nu_Fitter{
-
+    
 public:
-
+    
     Nu_Fitter(int kNuBarVar, std::string path, std::string filename1, std::string filename2, std::string filename3, std::string filename4); // overloaded constructor: takes data from two files instead
     ~Nu_Fitter();
-
-    void make_sum(TH1D* hist, bool oscillate); // applies probability to histogram of both files, predicted histogram will take the sum of the updated histograms
+    
+    void make_sum(char hist_type, bool oscillate); // applies probability to histogram of both files, predicted histogram will take the sum of the updated histograms
     void print_kNu(); //tells user what value kNuBar has at the moment
-    double getLLH(TH1D* hist); // calculates the log likelihood
-
+    double getLLH(); // calculates the log likelihood
+    
     void show_Prediction(); // show the prediction histogram for analysis
-
+    
 protected:
     TH1D* _Data;
     TH1D* _input1;// nu mu
@@ -80,8 +80,8 @@ protected:
     std::string _filename4;
     vector<double> currentPars;
     vector<double> proposedPars;
-
-
+    
+    
 };
 
 
