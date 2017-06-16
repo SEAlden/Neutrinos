@@ -40,24 +40,24 @@
 #include <stdio.h>
 #include <vector>
 #include <string>
-using namespace std
+using namespace std;
 
 class Nu_Fitter{
-    
+
 public:
-    
-    Nu_Fitter(int kNuBarVar, std::string path, std::string filename, std::string filename2, std::string filename3, std::string filename4); // overloaded constructor: takes data from two files instead
+
+    Nu_Fitter(int kNuBarVar, std::string path, std::string filename1, std::string filename2, std::string filename3, std::string filename4); // overloaded constructor: takes data from two files instead
     ~Nu_Fitter();
 
     void make_sum(TH1D* hist, bool oscillate); // applies probability to histogram of both files, predicted histogram will take the sum of the updated histograms
     void print_kNu(); //tells user what value kNuBar has at the moment
     double getLLH(TH1D* hist); // calculates the log likelihood
-    
+
     void show_Prediction(); // show the prediction histogram for analysis
-    
+
 protected:
     TH1D* _Data;
-    TH1D* _input;// nu mu
+    TH1D* _input1;// nu mu
     TH1D* _input2;// nu mu bar
     TH1D* _input3;// nu e
     TH1D* _input4;// nu e bar
@@ -74,14 +74,14 @@ protected:
     double Density;
     int nbin;
     std::string _path;
-    std::string _filename;
+    std::string _filename1;
     std::string _filename2;
     std::string _filename3;
     std::string _filename4;
     vector<double> currentPars;
     vector<double> proposedPars;
-    
-    
+
+
 };
 
 
