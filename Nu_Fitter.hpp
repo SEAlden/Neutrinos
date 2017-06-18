@@ -43,18 +43,20 @@
 using namespace std;
 
 class Nu_Fitter{
-    
+
 public:
-    
+
     Nu_Fitter(int kNuBarVar, std::string path, std::string filename1, std::string filename2, std::string filename3, std::string filename4); // overloaded constructor: takes data from two files instead
     ~Nu_Fitter();
-    
-    void make_sum(char hist_type, bool oscillate); // applies probability to histogram of both files, predicted histogram will take the sum of the updated histograms
+
+    void make_sum(char hist_type, bool oscillate);
+    // applies probability to each raw histogram and then sums them up.
+    // Command: hist_type: 'd' for (fake) data, 'p' for prediction; oscillate: true for oscillation, false for no oscillation
+
     void print_kNu(); //tells user what value kNuBar has at the moment
     double getLLH(); // calculates the log likelihood
-    
     void show_Prediction(); // show the prediction histogram for analysis
-    
+
 protected:
     TH1D* _Data;
     TH1D* _input1;// nu mu
@@ -63,12 +65,6 @@ protected:
     TH1D* _input4;// nu e bar
     TH1D* _Prediction;
     bool kSquared;   // using sin^2(x) variables?
-    double DM2;
-    double Theta23;
-    double Theta13;
-    double dm2;
-    double Theta12;
-    double delta   =  0 * (3.1415926/180.0); //convert to radians
     int kNuBar; // positive for neutrino, negative for antineutrino
     double BasePath; //km
     double Density;
@@ -80,8 +76,8 @@ protected:
     std::string _filename4;
     vector<double> currentPars;
     vector<double> proposedPars;
-    
-    
+
+
 };
 
 
