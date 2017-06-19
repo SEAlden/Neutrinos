@@ -108,15 +108,15 @@ void Markov_Chain::print(){
 
 
     std::cout << "Proposed parameters: " << std::endl
-    << "Energy "   << proposedPars[0] << std::endl
-    << "DM2 "      << proposedPars[1] << std::endl
-    << "Theta23 "  << proposedPars[2] << std::endl
-    << "Theta13 "  << proposedPars[3] << std::endl
-    << "dm2 "      << proposedPars[4] << std::endl
-    << "Theta12 "  << proposedPars[5] << std::endl
-    << "Delta "    << proposedPars[6] << std::endl
-    << "n_series " << proposedPars[7] << std::endl
-    << "Beta "     << proposedPars[8] << std::endl;
+    << "Energy\t "   << proposedPars[0] << std::endl
+    << "DM2\t "      << proposedPars[1] << std::endl
+    << "Theta23\t "  << proposedPars[2] << std::endl
+    << "Theta13\t "  << proposedPars[3] << std::endl
+    << "dm2\t "      << proposedPars[4] << std::endl
+    << "Theta12\t "  << proposedPars[5] << std::endl
+    << "Delta\t "    << proposedPars[6] << std::endl
+    << "n_series\t " << proposedPars[7] << std::endl
+    << "Beta\t "     << proposedPars[8] << std::endl;
 
 
 }
