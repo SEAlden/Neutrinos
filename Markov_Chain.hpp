@@ -1,6 +1,6 @@
 //
 //  Markov.hpp
-//  
+//
 //
 //  Created by Siobhan Alden & Andrew Yong on 16/06/2017.
 //
@@ -43,19 +43,19 @@ class Markov_Chain{
 public:
     Markov_Chain(std::vector<double> currentPars, int nstep);
     ~Markov_Chain();
-    void startMH(std::vector<double> currentPars, Nu_Fitter* oscObject);
-    void set_varied(int element);
-    void print();
-    
+    void startMH(std::vector<double> currentPars, Nu_Fitter* oscObject, double width); // starts the Metropolis-Hastings algorithm
+    void set_pars(int element); // if element is true, the parameter associated with the true element is varied in the Markov chain.
+    void print(); // prints the proposed parameters
+
 private:
-    
+
     int steps;
     std::vector<double> proposedPars;
     double currentLLH;
     double proposedLLH;
-    std::vector<bool> varied;
-    TFile* file;// = new TFile("mcmc.root","RECREATE");
-    TTree* outputtree;// = new TTree("outputtree","");
+    std::vector<bool> pars;
+    TFile* file;
+    TTree* outputtree;
 
 
 
