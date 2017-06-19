@@ -11,7 +11,7 @@
 
 #include <stdio.h>
 #include "Nu_Fitter.hpp"
-#include "Nu_Fitter.cpp"
+//#include "Nu_Fitter.cpp"
 #include <iostream>
 #include <vector>
 
@@ -25,7 +25,6 @@ public:
     double series( double E);
     double fact(int n);
     double approx( double E);
-    //void mass(int heirachy);
     double osci_prob( double E);
     
 private:

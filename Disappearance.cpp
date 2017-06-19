@@ -146,23 +146,7 @@ double Disappearance::approx( double E){
     return 1-coef_sq*sin_sq;
 
 }
-/*
-void Disappearance::mass(int heirachy){
-    
-    if (heirachy == 1){
-        dm_sq = dm2;
-    }
-    
-    else if (heirachy == 2){
-        dm_sq = DM2;
-    }
-    
-    else{
-        std::cout << "Incorrect Mass difference chosen." << std::endl;
-    }
 
-}
-*/
 double Disappearance::osci_prob( double E){
 
 
