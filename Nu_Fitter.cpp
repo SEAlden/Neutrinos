@@ -1,3 +1,4 @@
+
 //
 //  Nu_Fitter.cpp
 //  Neutrinos
@@ -43,13 +44,27 @@ Nu_Fitter::Nu_Fitter(int kNuBarVar, std::string path, std::string filename1, std
     currentPars.push_back(10); // n : 7
     currentPars.push_back(1); // beta : 8
     
+    proposedPars.push_back(0); // energy : 0
+    proposedPars.push_back(2.4e-3);//DM2 : 1
+    proposedPars.push_back(0.5); //theta23 : 2
+    proposedPars.push_back(0.025); //theta13 : 3
+    proposedPars.push_back(7.6e-3); //dm2 : 4
+    proposedPars.push_back(0.312); //theta12 : 5
+    proposedPars.push_back(0); // deltacp : 6
+    proposedPars.push_back(10); // n : 7
+    proposedPars.push_back(1); // beta : 8
+    
+
+    
+    
+    
 }
 
 
 Nu_Fitter::~Nu_Fitter(){}
 
 
-void Nu_Fitter::make_sum(char hist_type, bool oscillate){
+void Nu_Fitter::make_sum(char hist_type, bool oscillate, bool vector_type){
     
     // if statement for probability for oscillation or probability of no oscillation
     int in_nu1, out_nu1, in_nu2, out_nu2;
@@ -89,12 +104,23 @@ void Nu_Fitter::make_sum(char hist_type, bool oscillate){
         
         E = _input1->GetXaxis()->GetBinCenter(i);
         
-        bNu->SetMNS( currentPars[5], currentPars[3], currentPars[2], currentPars[4], currentPars[1], currentPars[6] , E, kSquared, kNuBar );
+        if(vector_type){
         
+            bNu->SetMNS( currentPars[5], currentPars[3], currentPars[2], currentPars[4], currentPars[1], currentPars[6] , E, kSquared, kNuBar );
+        
+      
+            bNu2->SetMNS( currentPars[5], currentPars[3], currentPars[2], currentPars[4], currentPars[1], currentPars[6] , E, kSquared, -1*kNuBar );
+        }
+        
+        else{
+            bNu->SetMNS( proposedPars[5], proposedPars[3], proposedPars[2], proposedPars[4], proposedPars[1], proposedPars[6] , E, kSquared, kNuBar );
+            
+            
+            bNu2->SetMNS( proposedPars[5], proposedPars[3], proposedPars[2], proposedPars[4], proposedPars[1], proposedPars[6] , E, kSquared, -1*kNuBar );
+        
+        }
         bNu->propagateLinear( 1*kNuBar, BasePath, Density );
-        
-        bNu2->SetMNS( currentPars[5], currentPars[3], currentPars[2], currentPars[4], currentPars[1], currentPars[6] , E, kSquared, -1*kNuBar );
-        
+            
         bNu2->propagateLinear( -1*kNuBar, BasePath, Density);
         
         // individual probabilities for each file
@@ -158,10 +184,10 @@ double Nu_Fitter::getLLH(){
         N = _Data->GetBinContent(j);
         
         
-        if(N!=0){ // to prevent nan at later bins(higher energies) with 0 entries
+        if(N!=0&&lambda!=0){ // to prevent nan at later bins(higher energies) with 0 entries
             LLH += lambda-N - N*log(lambda/N);
             //std::cout << " lambda " << lambda << " Data " << N << " total LLH " << LLH << " LLH " << lambda-N - N*log(lambda/N) << std::endl;
-
+            
         }
         
     }
@@ -186,7 +212,12 @@ void Nu_Fitter::show_Prediction(){
 }
 
 std::vector<double> Nu_Fitter::return_param(){
-
+    
     return currentPars;
+    
+}
 
+void Nu_Fitter::set_paras(int index, double val){
+
+    proposedPars[index] = val;
 }

@@ -45,7 +45,7 @@ void Disappearance::make_Prediction(char hist_type, int which){
         
         if(which == 1){
             prob = series(Eng);
-                        if(prob >=1){
+            if(prob >=1){
                 prob =0;
             }
             weight = prob*bin_content1 + prob*bin_content2 +prob*bin_content3 + prob*bin_content4;
