@@ -113,7 +113,7 @@ Appearance.o:
 		$(CXX) -o Appearance.o $(ROOTCFLAGS) $(CXXFLAGS) -c Appearance.cpp
 
 .PHONY: Disappearance.o
-Appearance.o:
+Disappearance.o:
 		$(CXX) -o Disappearance.o $(ROOTCFLAGS) $(CXXFLAGS) -c Disappearance.cpp
 
 .PHONY: Markov_Chain.o
