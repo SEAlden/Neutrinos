@@ -9,6 +9,32 @@
 #ifndef Disappearance_hpp
 #define Disappearance_hpp
 
+
+#include "BargerPropagator.h"
+
+#include "TFile.h"
+#include "TH1D.h"
+#include "TApplication.h"
+
+#include <cstdlib>
+#include <ctime>
+#include <string>
+#include <sstream>
+
+#include "TROOT.h"
+#include "TStyle.h"
+#include "TString.h"
+#include "TCanvas.h"
+#include "TH1.h"
+#include "TH2.h"
+#include "TFile.h"
+#include "TNtuple.h"
+#include "TF1.h"
+#include "TF2.h"
+#include "TMath.h"
+#include "TRandom3.h"
+#include "TGraph.h"
+
 #include <stdio.h>
 #include "Nu_Fitter.hpp"
 //#include "Nu_Fitter.cpp"
@@ -26,13 +52,19 @@ public:
     double fact(int n);
     double approx( double E);
     double osci_prob( double E);
+    double taylorinv(double x, std::vector<double>& par);
+    void taylor(char hist_type);
+    //void fitinvE();
+    std::vector<double> return_coef_pars();
+    void set_paras_d(int index, double val, char vector_type);
     
 private:
     
     double L = 295;
     double dm_sq;
     double a;
-    
+    std::vector<double> Ene, invE, prob;
+    std::vector<double> coefs;
     
 };
 

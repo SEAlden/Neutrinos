@@ -26,15 +26,25 @@ Disappearance::Disappearance(int kNuBarVar, std::string path, std::string filena
     
     a = 1.27*L*dm_sq;
     
+    coefs.push_back(1.00043);
+    coefs.push_back(-0.00513335);
+    coefs.push_back(-0.81076);
+    coefs.push_back(-0.0217913);
+    coefs.push_back(0.223944);
+    coefs.push_back(0.0340821);
+    coefs.push_back(-0.0569585);
+    coefs.push_back(0.0133551);
+    coefs.push_back(-0.000970247);
+    
 
 }
 
 Disappearance::~Disappearance(){}
 
 void Disappearance::make_Prediction(char hist_type, int which){
-
+    
     for(int i = 1; i <= nbin; i++){
-            
+        
         double Eng = _input1->GetBinCenter(i);
         double bin_content1 = _input1->GetBinContent(i);
         double bin_content2 = _input2->GetBinContent(i);
@@ -49,7 +59,7 @@ void Disappearance::make_Prediction(char hist_type, int which){
                 prob =0;
             }
             weight = prob*bin_content1 + prob*bin_content2 +prob*bin_content3 + prob*bin_content4;
-
+            
             //std::cout << "weight " << weight << " Prob " << prob << " Eng " << Eng << std::endl;
             
             if(hist_type == 'd'){
@@ -63,7 +73,7 @@ void Disappearance::make_Prediction(char hist_type, int which){
         }
         
         else if(which == 2){
-        
+            
             prob = approx(Eng);
             weight = prob*bin_content1 + prob*bin_content2 + prob*bin_content3 + prob*bin_content4;
             if(hist_type == 'd'){
@@ -77,7 +87,7 @@ void Disappearance::make_Prediction(char hist_type, int which){
         }
         
         else if(which == 3){
-        
+            
             prob = osci_prob(Eng);
             weight = prob*bin_content1 + prob*bin_content2 + prob*bin_content3 + prob*bin_content4;
             if(hist_type == 'd'){
@@ -88,7 +98,7 @@ void Disappearance::make_Prediction(char hist_type, int which){
             }
             else{std::cout << "Invalid Hist Type" << std::endl;}
             
-        
+            
         }
         
         else{
@@ -96,7 +106,7 @@ void Disappearance::make_Prediction(char hist_type, int which){
         }
         
     }
-  
+    
 }
 
 double Disappearance::series(double E){
@@ -158,4 +168,88 @@ double Disappearance::osci_prob( double E){
     return 1.0-(4.0*coef*sin_sq-coef*coef*sin_sq);
     
 
+}
+
+double Disappearance::taylorinv(double x, std::vector<double>& par)
+{
+    // for(int i=0; i<9; i++)
+    //    printf("%f\n",par[i]);
+    
+    double sum=0;
+    for(int i=0; i<9; i++)
+    {
+      
+        sum+=par[i]*pow(1/x,i);
+    }
+    return sum;
+}
+
+
+void Disappearance::taylor(char hist_type){
+
+    for(int i =0; i<=_input1->GetNbinsX(); i++){
+    
+        Ene.push_back(_input1->GetXaxis()->GetBinCenter(i));
+        
+    }
+    
+    for (int j =0; j < Ene.size(); j++){
+        
+        double bin_content1 = _input1->GetBinContent(j);
+        double bin_content2 = _input2->GetBinContent(j);
+        double bin_content3 = _input3->GetBinContent(j);
+        double bin_content4 = _input4->GetBinContent(j);
+
+        if(hist_type == 'd'){
+            
+            double prob = taylorinv(Ene[j], coefs);
+            std::cout << Ene[j] << "," << prob << std::endl;
+            double  weight = prob*bin_content1 + prob*bin_content2 + prob*bin_content3 + prob*bin_content4;
+            _Data->SetBinContent(Ene[j],weight);
+        }
+        else if(hist_type == 'p'){
+            
+            double prob = taylorinv(Ene[j], coefs);
+            //std::cout << Ene[j] << "," << prob << " " << bin_content1 << " " << bin_content2 << " " << bin_content3 << " " << bin_content4 << std::endl;
+            double  weight = prob*bin_content1 + prob*bin_content2 + prob*bin_content3 + prob*bin_content4;
+            
+            //std::cout << "Ene " << Ene[j] << " weight " << weight << std::endl;
+            _Prediction->SetBinContent(Ene[j],weight);
+            
+//            TApplication *app = new TApplication("app",0,0);
+//            
+//            //PLOTTING
+//            TCanvas *c1 = new TCanvas("c1","Canvas",2000,1000);
+//            c1->SetTitle("Taylor Series Oscillation");
+//            _Prediction->Draw("e");
+//            c1->Update();
+//            app->Run(); // need this to give options for saving and zoom etc
+
+        }
+        else{std::cout << "Invalid Hist Type" << std::endl;}
+    }
+    
+
+
+}
+
+std::vector<double> Disappearance::return_coef_pars(){
+    
+    return coefs;
+    
+}
+
+void Disappearance::set_paras_d(int index, double val, char vector_type){
+    if(vector_type=='c'){
+        coefs[index] = val;
+    }
+    
+    else if(vector_type == 'p'){
+        coefs[index] = val;
+    }
+    
+    else{
+        std::cout << "Invalid command for vector_type. Please choose either 'c' or 'p'." << std::endl;
+    }
+    
 }
