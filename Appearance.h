@@ -10,13 +10,8 @@ public:
   Appearance(int kNuBarVar, std::string path, std::string filename, std::string filename2, std::string filename3, std::string filename4);
   ~Appearance();
 
-  double getLLH(Appearance* dataObj); // function argument is always the 'fixed' data
-  double getBinVal(int i);
+  void set_beta();
 
-
-private:
-
-  double beta;
 };
 
 #endif
