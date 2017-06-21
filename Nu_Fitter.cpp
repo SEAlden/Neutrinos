@@ -113,6 +113,7 @@ void Nu_Fitter::make_sum(char hist_type, char vector_type, bool oscillate){
         }
 
         else if(vector_type=='p'){
+          
             bNu->SetMNS( proposedPars[5], proposedPars[3], proposedPars[2], proposedPars[4], proposedPars[1], proposedPars[6] , E, kSquared, kNuBar );
 
 

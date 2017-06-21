@@ -206,11 +206,11 @@ void Markov_Chain::startMH(std::vector<double> currentPars, Disappearance* oscOb
 
 }
 
-void Markov_Chain::startMH(std::vector<double> fitPars, Appearance *dataObj, Appearance *fitObj){
+void Markov_Chain::startMH(std::vector<double> currentPars, Appearance *plusObj, Appearance *minusObj){
 
 
 
-    currentLLH = fitObj->getLLH(dataObj);
+    currentLLH = plusObj->getLLH() + minusObj->getLLH(); // add LLH from two files
 
     for(int i=0; i<steps; i++){
 
@@ -226,32 +226,31 @@ void Markov_Chain::startMH(std::vector<double> fitPars, Appearance *dataObj, App
 
         }
 
-        for(int j=0; j<fitPars.size(); j++) {
+        for(int j=0; j<currentPars.size(); j++) {
 
             if(pars[j]){
 
-                proposedPars[j]=rnd->Gaus(fitPars[j],width[j]);
-                fitObj->set_paras(j, proposedPars[j],'p');
+                proposedPars[j]=rnd->Gaus(currentPars[j],width[j]);
+                plusObj->set_paras(j, proposedPars[j],'p');
+                minusObj->set_paras(j, proposedPars[j],'p');
 
             }
-            fitObj->make_sum('p','p',true);
+            plusObj->make_sum('p','p',true);
+            minusObj->make_sum('p','p',true);
 
         }
-
-        proposedLLH = fitObj->getLLH(dataObj);
-        //  std::cout << "Proposed: " << proposedLLH << "\tCurrent: " << currentLLH << std::endl;
+        proposedLLH = plusObj->getLLH() + minusObj->getLLH();
 
         double accProb = TMath::Min(1.,TMath::Exp(currentLLH-proposedLLH));
         double fRandom = rnd->Rndm();
-        // std::cout << "i " << i << " accprob " << accProb << " fRandom " << fRandom << " current LLH " << currentLLH << " proposed LLH " << proposedLLH <<  " parameter 8 current: " << fitPars[8] << " parameter 8 proposed:" << proposedPars[8] << std::endl;
-        // std::cout << "i " << i  << "\tparameter 6 current: " << fitPars[6] << "\tparameter 6 proposed:" << proposedPars[6] << std::endl;
+        //std::cout << "i " << i << " accprob " << accProb << " fRandom " << fRandom << " current LLH " << currentLLH << " proposed LLH " << proposedLLH <<  " parameter 1 current: " << currentPars[1] << " parameter 1 proposed:" << proposedPars[1] << std::endl;
 
         if ( fRandom <= accProb )
         {
-            for(int k=0; k<fitPars.size(); k++)
+            for(int k=0; k<currentPars.size(); k++)
             {
                 if(pars[k]){
-                    fitPars[k]=proposedPars[k];
+                    currentPars[k]=proposedPars[k];
                     //std::cout << "i " << i << " proposed " << proposedPars[k] <<std::endl;
                 }
 
@@ -259,7 +258,18 @@ void Markov_Chain::startMH(std::vector<double> fitPars, Appearance *dataObj, App
             currentLLH=proposedLLH;
 
         }
+        //std::cout << "i " << i << " Theta23 " << proposedPars[2] <<std::endl;
 
+//        outputtree->Branch("Energy",&currentPars[0],"E/D");
+//        outputtree->Branch("DM2",&currentPars[1],"DM2/D");
+//        outputtree->Branch("Theta23",&currentPars[2],"Theta23/D");
+//        outputtree->Branch("Theta13",&currentPars[3],"Theta13/D");
+//        outputtree->Branch("dm2",&currentPars[4],"dm2/D");
+//        outputtree->Branch("Theta12",&currentPars[5],"Theta12/D");
+//        outputtree->Branch("Delta",&currentPars[6],"Delta/D");
+//        outputtree->Branch("n_series",&currentPars[7],"n_series/D");
+//        outputtree->Branch("Beta",&currentPars[8],"Beta/D");
+//        outputtree->Branch("LLH",&currentLLH,"LLH/D");
         outputtree->Fill();
 
         if(i==steps-1){
@@ -273,6 +283,7 @@ void Markov_Chain::startMH(std::vector<double> fitPars, Appearance *dataObj, App
 
 
 }
+
 
 
 void Markov_Chain::set_pars(int index){

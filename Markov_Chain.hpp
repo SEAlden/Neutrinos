@@ -45,7 +45,7 @@ public:
     ~Markov_Chain();
     void startMH(std::vector<double> currentPars, Nu_Fitter* oscObject); // starts the Metropolis-Hastings algorithm
     void startMH(std::vector<double> currentPars, Disappearance* oscObject, bool object);
-    void startMH(std::vector<double> fitPars, Appearance *dataObj, Appearance *fitObj);
+    void startMH(std::vector<double> currentPars, Appearance *plusObj, Appearance *minusObj);
     void set_pars(int index); // if element is true, the parameter associated with the true element is varied in the Markov chain.
     void set_width(int index, double value); // fine tunes the width of a particular parameter
     void print(); // prints the proposed parameters
