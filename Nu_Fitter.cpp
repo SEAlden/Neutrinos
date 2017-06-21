@@ -113,7 +113,7 @@ void Nu_Fitter::make_sum(char hist_type, char vector_type, bool oscillate){
         }
 
         else if(vector_type=='p'){
-          
+
             bNu->SetMNS( proposedPars[5], proposedPars[3], proposedPars[2], proposedPars[4], proposedPars[1], proposedPars[6] , E, kSquared, kNuBar );
 
 
@@ -134,17 +134,20 @@ void Nu_Fitter::make_sum(char hist_type, char vector_type, bool oscillate){
         bin_content3 = _input3->GetBinContent(i);
         bin_content4 = _input4->GetBinContent(i);
 
-        // sum the files
-        weight = (1./currentPars[8])*osci_prob1*bin_content1 + currentPars[8]*osci_prob2*bin_content2 + (1./currentPars[8])*osci_prob3*bin_content3 + currentPars[8]*osci_prob4*bin_content4;
+
 
         if(hist_type == 'd'){ // applies changes to the _Data histogram
 
+            // sum the files
+            weight = (1./currentPars[8])*osci_prob1*bin_content1 + currentPars[8]*osci_prob2*bin_content2 + (1./currentPars[8])*osci_prob3*bin_content3 + currentPars[8]*osci_prob4*bin_content4;
             _Data->SetBinContent(i,weight);
 
         }
 
         else if(hist_type == 'p'){ // applies changes to the _Prediction histogram
 
+            // sum the files
+            weight = (1./proposedPars[8])*osci_prob1*bin_content1 + proposedPars[8]*osci_prob2*bin_content2 + (1./proposedPars[8])*osci_prob3*bin_content3 + proposedPars[8]*osci_prob4*bin_content4;
             _Prediction->SetBinContent(i,weight);
 
         }
@@ -154,6 +157,8 @@ void Nu_Fitter::make_sum(char hist_type, char vector_type, bool oscillate){
             std::cout << "Invalid Hist Type" << std::endl;
 
         }
+
+        // std::cout << "Data: " << _Data->GetBinContent(i) << "\tPrediciton: " << _Prediction->GetBinContent(i) <<  std::endl;
 
     }
 
@@ -187,7 +192,7 @@ double Nu_Fitter::getLLH(){
 
         if(N!=0&&lambda!=0){ // to prevent nan at later bins(higher energies) with 0 entries
             LLH += lambda-N - N*log(lambda/N);
-            //std::cout << " lambda " << lambda << " Data " << N << " total LLH " << LLH << " LLH " << lambda-N - N*log(lambda/N) << std::endl;
+            // std::cout << " lambda " << lambda << " Data " << N << " total LLH " << LLH << " LLH " << lambda-N - N*log(lambda/N) << std::endl;
 
         }
 

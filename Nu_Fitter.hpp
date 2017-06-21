@@ -59,7 +59,7 @@ public:
     std::vector<double> return_cparam();
     void set_paras(int index, double val, char vector_type);
     //redefine the value of the index'th parameter
-    //Command: vector_type: 'c' for currentPars, 'p' for proposedPars
+    //Command: vector_type: 'c' to set currentPars, 'p' to set proposedPars
 
 protected:
     TH1D* _Data;
@@ -80,6 +80,7 @@ protected:
     std::string _filename4;
     vector<double> currentPars;
     vector<double> proposedPars;
+    
 
 
 };
