@@ -13,7 +13,7 @@
 #include "Nu_Fitter.hpp"
 #include "Disappearance.hpp"
 #include "Appearance.h"
-#include "Appearance.cpp"
+// #include "Appearance.cpp"
 #include "TFile.h"
 #include "TH1D.h"
 #include "TApplication.h"
@@ -40,8 +40,9 @@
 
 
 class Markov_Chain{
-    
+
 public:
+  Markov_Chain(std::vector<double> currentPars, int nstep, std::string filename);
     Markov_Chain(std::vector<double> currentPars, std::vector<double> coef, int nstep, std::string filename);
     ~Markov_Chain();
     void startMH(std::vector<double> currentPars, Nu_Fitter* oscObject); // starts the Metropolis-Hastings algorithm
@@ -51,9 +52,9 @@ public:
     void set_width(int index, double value); // fine tunes the width of a particular parameter
     void print(); // prints the proposed parameters
     void set_coef(int index);
-    
+
 private:
-    
+
     int steps;
     std::vector<double> proposedPars;
     std::vector<double> proposedcoef;
@@ -66,9 +67,9 @@ private:
     TTree* outputtree;
     std::vector<double> width;
     TRandom3* rnd;
-    
-    
-    
+
+
+
 };
 
 
