@@ -65,6 +65,12 @@ private:
     double a;
     std::vector<double> Ene, invE, prob;
     std::vector<double> coefs;
+    std::vector<double> bin1;
+    std::vector<double> bin2;
+    std::vector<double> bin3;
+    std::vector<double> bin4;
+
+    
     
 };
 

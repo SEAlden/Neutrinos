@@ -75,10 +75,10 @@ int main(){
          std::vector<double> paramsA = TestA.return_cparam();
          std::vector<double> co = TestA.return_coef_pars();
     
-         Markov_Chain five_2 = Markov_Chain(paramsA, co, 10000, "expan_branch.root");
+         Markov_Chain five_2 = Markov_Chain(paramsA, co, 10000, "wtf_branch.root");
     
-         five_2.set_pars(1);// theta23
-         five_2.set_pars(2);//dm23
+         //five_2.set_pars(1);// theta23
+         //five_2.set_pars(2);//dm23
 //         five_2.set_coef(0);//dm23
 //         five_2.set_pars(10);//dm23
 //         five_2.set_pars(11);//dm23
@@ -89,7 +89,7 @@ int main(){
 //         five_2.set_pars(16);//dm23
 //         five_2.set_pars(17);//dm23
     
-         five_2.startMH(paramsA, co, &TestA);
+         five_2.startMH(co, &TestA, true);
     
     
     

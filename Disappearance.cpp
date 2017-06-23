@@ -36,7 +36,28 @@ Disappearance::Disappearance(int kNuBarVar, std::string path, std::string filena
     coefs.push_back(0.0133551);
     coefs.push_back(-0.000970247);
     
-
+    std::cout << "tag A" << std::endl;
+    
+    for(int i =1; i<=_input1->GetNbinsX(); i++){
+        
+        Ene.push_back(_input1->GetXaxis()->GetBinCenter(i));
+        
+    }
+    
+    std::cout << "tag B" << std::endl;
+    
+    for (int j =1; j <= Ene.size(); j++){
+        
+        bin1.push_back(_input1->GetBinContent(j));
+        bin2.push_back(_input2->GetBinContent(j));
+        bin3.push_back(_input3->GetBinContent(j));
+        bin4.push_back(_input4->GetBinContent(j));
+    }
+    
+    std::cout << "tag C" << std::endl;
+    
+    
+    
 }
 
 Disappearance::~Disappearance(){}
@@ -175,45 +196,30 @@ double Disappearance::taylorinv(double x, std::vector<double>& par)
     // for(int i=0; i<9; i++)
     //    printf("%f\n",par[i]);
     
-    double sum=0;
+    double sum = 0;
     for(int i=0; i<9; i++)
     {
-      
+        
         sum+=par[i]*pow(1/x,i);
+        
     }
+    //std::cout << "In taylorinv: " << "\t" << sum << std::endl;
     return sum;
 }
 
 
 void Disappearance::taylor(char hist_type){
 
-    for(int i =0; i<=_input1->GetNbinsX(); i++){
-    
-        Ene.push_back(_input1->GetXaxis()->GetBinCenter(i));
-        
-    }
+ 
     
     for (int j =0; j < Ene.size(); j++){
-        
-        double bin_content1 = _input1->GetBinContent(j);
-        double bin_content2 = _input2->GetBinContent(j);
-        double bin_content3 = _input3->GetBinContent(j);
-        double bin_content4 = _input4->GetBinContent(j);
+        double prob = taylorinv(Ene[j], coefs);
+        double  weight = prob*bin1[j] + prob*bin2[j] + prob*bin3[j] + prob*bin4[j];
 
         if(hist_type == 'd'){
-            
-            double prob = taylorinv(Ene[j], coefs);
-            std::cout << Ene[j] << "," << prob << std::endl;
-            double  weight = prob*bin_content1 + prob*bin_content2 + prob*bin_content3 + prob*bin_content4;
             _Data->SetBinContent(Ene[j],weight);
         }
         else if(hist_type == 'p'){
-            
-            double prob = taylorinv(Ene[j], coefs);
-            //std::cout << Ene[j] << "," << prob << " " << bin_content1 << " " << bin_content2 << " " << bin_content3 << " " << bin_content4 << std::endl;
-            double  weight = prob*bin_content1 + prob*bin_content2 + prob*bin_content3 + prob*bin_content4;
-            
-            //std::cout << "Ene " << Ene[j] << " weight " << weight << std::endl;
             _Prediction->SetBinContent(Ene[j],weight);
             
 //            TApplication *app = new TApplication("app",0,0);
