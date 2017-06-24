@@ -16,27 +16,25 @@ Markov_Chain::Markov_Chain(std::vector<double> &obj_pars, std::vector<std::strin
 
     double width_factor = 100; // default width factor
 
-    for(int j = 0; j < parsName.size();j++){
-      branchName.push_back(parsName[j]+"/D");
-      std::cout << branchName[j] << std::endl;
+    for(int i = 0; i < parsName.size();i++){
+      branchName.push_back(parsName[i]+"/D");
+      std::cout << branchName[i] << std::endl;
     }
 
-    for(int i = 0; i<obj_pars.size(); i++){
+    for(int j = 0; j<obj_pars.size(); j++){
       //fills the branch
       // TString temp = Form("parsName[%i]/D",i);
-      TString temp = branchName[i].c_str();
+      TString arg1 = parsName[j].c_str();
+      TString arg3 = branchName[j].c_str();
       // tree->Branch(parsName[i].c_str(), obj_pars[i], "hi/D");
-      tree->Branch(parsName[i].c_str(), obj_pars[0],Form("parsName[%i]/D",i) ); // Siobhan: although doens't work, Form() might be useful for future
+      tree->Branch(arg1, &obj_pars[j],arg3); // Siobhan: although doens't work, Form() might be useful for future
       //initialising width vector; can be fine-tuned with set_width
       // width.push_back(obj_pars[i]/width_factor);
     }
 
-    // std::string bee = "Hi";
-    // tree->Branch(parsName[0].c_str(), obj_pars[0] , bee.c_str());
-
-
     tree->Fill();
 
+    //sets all parameters to be false by default; only parameters which are set true will vary in MCMC
     for( int i = 0; i<=8; i++){
         pars.push_back(false);
         // coef_bool.push_back(true);
