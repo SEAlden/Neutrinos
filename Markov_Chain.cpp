@@ -11,63 +11,57 @@
 Markov_Chain::Markov_Chain(std::vector<double> &obj_pars, std::vector<std::string> &parsName, int nstep, std::string filename){
 
     steps = nstep;
-    file = new TFile(filename.c_str(),"RECREATE");//
+    file = new TFile(filename.c_str(),"RECREATE");
     tree = new TTree("tree","");
+
+
+    for(int i = 0; i < parsName.size();i++){ // creates the leaflist for each parameter branch
+      branchName.push_back(parsName[i]+"/D");
+    }
 
     double width_factor = 100; // default width factor
 
-    for(int i = 0; i < parsName.size();i++){
-      branchName.push_back(parsName[i]+"/D");
-      std::cout << branchName[i] << std::endl;
-    }
+    for(int j = 0; j<obj_pars.size(); j++){ //fills the branch and initialises width vector
 
-    for(int j = 0; j<obj_pars.size(); j++){
-      //fills the branch
-      // TString temp = Form("parsName[%i]/D",i);
       TString arg1 = parsName[j].c_str();
       TString arg3 = branchName[j].c_str();
-      // tree->Branch(parsName[i].c_str(), obj_pars[i], "hi/D");
-      tree->Branch(arg1, &obj_pars[j],arg3); // Siobhan: although doens't work, Form() might be useful for future
-      //initialising width vector; can be fine-tuned with set_width
-      // width.push_back(obj_pars[i]/width_factor);
+
+      tree->Branch(arg1, &obj_pars[j],arg3);
+      width.push_back(obj_pars[j]/width_factor); // can be fine-tuned with set_width(...)
+
     }
 
     tree->Fill();
 
     //sets all parameters to be false by default; only parameters which are set true will vary in MCMC
-    for( int i = 0; i<=8; i++){
-        pars.push_back(false);
-        // coef_bool.push_back(true);
+    for( int k = 0; k<=obj_pars.size(); k++){
+
+        pars_bool.push_back(false);
         proposedPars.push_back(0);
-        // proposedcoef.push_back(0);
-         // populates the proposedPars vector
 
     }
 
     rnd  = new TRandom3(0);
 
-    //initialising width vector; can be fine-tuned with set_width
-    for(int k = 0; k < obj_pars.size(); k++){
-      width.push_back(obj_pars[k]/width_factor);
-    }
-   //E=0 : 0
-  //DM2=2.4e-3 : 1
-  //theta23=0.5 : 2
-  //theta13=0.025 : 3
-  //dm2=7.6e-3 : 4
-  //theta12=0.312 : 5
-  //deltacp=0 : 6
-  //n=10 : 7
-  //beta=1 : 8
-  //coef1=1.00043 : 9
-  //coef2=-0.00513335 : 10
-  //coef3=-0.81076 : 11
-  //coef4=-0.0217913 : 12
-  //coef5=0.223944 : 13
-  //coef6=0.0340821 : 14
-  //coef7=-0.0569585 : 15
-  //coef8=0.0133551 : 16
-  //coef9=-0.000970247 : 17
+    //Parameters and the corresponding index:
+    //E=0 : 0
+    //DM2=2.4e-3 : 1
+    //theta23=0.5 : 2
+    //theta13=0.025 : 3
+    //dm2=7.6e-3 : 4
+    //theta12=0.312 : 5
+    //deltacp=0 : 6
+    //n=10 : 7
+    //beta=1 : 8
+    //coef1=1.00043 : 9
+    //coef2=-0.00513335 : 10
+    //coef3=-0.81076 : 11
+    //coef4=-0.0217913 : 12
+    //coef5=0.223944 : 13
+    //coef6=0.0340821 : 14
+    //coef7=-0.0569585 : 15
+    //coef8=0.0133551 : 16
+    //coef9=-0.000970247 : 17
 
 
 
@@ -76,9 +70,8 @@ Markov_Chain::Markov_Chain(std::vector<double> &obj_pars, std::vector<std::strin
 
 Markov_Chain::~Markov_Chain(){};
 
+//Nu_Fitter MCMC:
 void Markov_Chain::startMH(std::vector<double>& currentPars, Nu_Fitter* oscObject){
-
-
 
     currentLLH = oscObject->getLLH();
 
@@ -98,26 +91,28 @@ void Markov_Chain::startMH(std::vector<double>& currentPars, Nu_Fitter* oscObjec
 
         for(int j=0; j<currentPars.size(); j++) {
 
-            if(pars[j]){
+            if(pars_bool[j]){
 
                 proposedPars[j]=rnd->Gaus(currentPars[j],width[j]);
                 oscObject->set_paras(j, proposedPars[j],'p');
 
             }
-            oscObject->make_sum('p','p',true);
+
+            oscObject->make_sum('p',true);
 
         }
+
         proposedLLH = oscObject->getLLH();
 
         double accProb = TMath::Min(1.,TMath::Exp(currentLLH-proposedLLH));
         double fRandom = rnd->Rndm();
-        //std::cout << "i " << i << " accprob " << accProb << " fRandom " << fRandom << " current LLH " << currentLLH << " proposed LLH " << proposedLLH <<  " parameter 1 current: " << currentPars[1] << " parameter 1 proposed:" << proposedPars[1] << std::endl;
+        // std::cout << "i " << i << " accprob " << accProb << " fRandom " << fRandom << " current LLH " << currentLLH << " proposed LLH " << proposedLLH <<  " parameter 2 current: " << currentPars[2] << " parameter 2 proposed:" << proposedPars[2] << std::endl;
 
         if ( fRandom <= accProb )
         {
             for(int k=0; k<currentPars.size(); k++)
             {
-                if(pars[k]){
+                if(pars_bool[k]){
                     currentPars[k]=proposedPars[k];
                     //std::cout << "i " << i << " proposed " << proposedPars[k] <<std::endl;
                 }
@@ -139,44 +134,56 @@ void Markov_Chain::startMH(std::vector<double>& currentPars, Nu_Fitter* oscObjec
     tree->Write();
     file->Close();
 
-
 }
 
+//Disappearance MCMC:
 void Markov_Chain::startMH(std::vector<double> &currentPars, Disappearance* oscObject, bool dis){
-    /*currentLLH = oscObject->getLLH();
+    currentLLH = oscObject->getLLH();
     //int count =0;
 
     for(int i=0; i<steps; i++){
         if(i%1000==0 || i==0){
 
-            if(i==0){std::cout << "Initialising random walk..." << std::endl;}
-            else{std::cout << "i " << i << "Running random walk..." << std::endl;}
-        }
-
-        for(int k = 0; k<coef.size();k++){
-            if(coef_bool[k]){
-                proposedcoef[k]=rnd->Gaus(coef[k],width[k]);
-                oscObject->set_paras_d(k, proposedcoef[k],'p');
+            if(i==0){
+              std::cout << "Initialising random walk..." << std::endl;
+            }
+            else{
+              std::cout << "i " << i << "Running random walk..." << std::endl;
             }
 
         }
+
+        for(int k = 0; k<currentPars.size();k++){
+            if(pars_bool[k]){
+
+                proposedPars[k]=rnd->Gaus(currentPars[k],width[k]);
+                oscObject->set_paras_d(k, proposedPars[k],'p');
+
+            }
+
+        }
+
         oscObject->taylor('p');
         proposedLLH = oscObject->getLLH();
+
         double accProb = TMath::Min(1.,TMath::Exp(currentLLH-proposedLLH));
         double fRandom = rnd->Rndm();
         //std::cout << "i " << i << " accprob " << accProb << " fRandom " << fRandom << " current LLH " << currentLLH << " proposed LLH " << proposedLLH <<  " parameter 1 current: " << coef[1] << " parameter 1 proposed:" << proposedcoef[1] << std::endl;
          if ( fRandom <= accProb )
         {
 
-            for(int m=0; m<coef.size(); m++)
+            for(int m=0; m<currentPars.size(); m++)
             {
 
-                if(coef_bool[m]){
+                if(pars_bool[m]){
                     //count++;
-                    std::cout << "coef " << m << " " << coef[m] << " proposed " << m << " " << proposedcoef[m] << std::endl;
-                    coef[m]=proposedcoef[m];}
+                  //  std::cout << "coef " << m << " " << currentPars[m] << " proposed " << m << " " << proposedPars[m] << std::endl;
+                    currentPars[m]=proposedPars[m];
+
+                  }
 
             }
+
             currentLLH=proposedLLH;
         }
 
@@ -192,12 +199,12 @@ void Markov_Chain::startMH(std::vector<double> &currentPars, Disappearance* oscO
 
    // std::cout << count << std::endl;
     tree->Write();
-    file->Close();*/
+    file->Close();
 
 }
+
+//Appearance MCMC:
 void Markov_Chain::startMH(std::vector<double> &currentPars, Appearance *plusObj, Appearance *minusObj){
-
-
 
     currentLLH = plusObj->getLLH() + minusObj->getLLH(); // add LLH from two files
 
@@ -217,28 +224,30 @@ void Markov_Chain::startMH(std::vector<double> &currentPars, Appearance *plusObj
 
         for(int j=0; j<currentPars.size(); j++) {
 
-            if(pars[j]){
+            if(pars_bool[j]){
 
                 proposedPars[j]=rnd->Gaus(currentPars[j],width[j]);
                 plusObj->set_paras(j, proposedPars[j],'p');
                 minusObj->set_paras(j, proposedPars[j],'p');
 
             }
-            plusObj->make_sum('p','p',true);
-            minusObj->make_sum('p','p',true);
+
+            //re-make the histograms again with newly updated parameters
+            plusObj->make_sum('p',true);
+            minusObj->make_sum('p',true);
 
         }
+
         proposedLLH = plusObj->getLLH() + minusObj->getLLH();
 
         double accProb = TMath::Min(1.,TMath::Exp(currentLLH-proposedLLH));
         double fRandom = rnd->Rndm();
 
-
         if ( fRandom <= accProb )
         {
             for(int k=0; k<currentPars.size(); k++)
             {
-                if(pars[k]){
+                if(pars_bool[k]){
                     currentPars[k]=proposedPars[k];
                     //std::cout << "i " << i << " proposed " << proposedPars[k] <<std::endl;
                 }
@@ -267,33 +276,12 @@ void Markov_Chain::startMH(std::vector<double> &currentPars, Appearance *plusObj
 
 void Markov_Chain::set_pars(int index){
 
-    pars[index] = true;
+    pars_bool[index] = true;
 
 }
-
-// void Markov_Chain::set_coef(int index){
-//
-//     coef_bool[index] = true;
-//
-// }
 
 void Markov_Chain::set_width(int index, double value){
 
     width[index] = value;
-
-}
-
-void Markov_Chain::print(){
-
-    std::cout << "Proposed parameters: " << std::endl
-    << "Energy\t "   << proposedPars[0] << std::endl
-    << "DM2\t "      << proposedPars[1] << std::endl
-    << "Theta23\t "  << proposedPars[2] << std::endl
-    << "Theta13\t "  << proposedPars[3] << std::endl
-    << "dm2\t "      << proposedPars[4] << std::endl
-    << "Theta12\t "  << proposedPars[5] << std::endl
-    << "Delta\t "    << proposedPars[6] << std::endl
-    << "n_series " << proposedPars[7] << std::endl
-    << "Beta\t "     << proposedPars[8] << std::endl;
 
 }
