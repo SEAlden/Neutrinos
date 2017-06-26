@@ -48,7 +48,7 @@ public:
     void startMH(std::vector<double> &currentPars, Nu_Fitter *oscObject); // starts the Metropolis-Hastings algorithm
     void startMH(std::vector<double> &currentPars, Disappearance *oscObject, bool dis);
     void startMH(std::vector<double> &currentPars, Appearance *plusObj, Appearance *minusObj);
-    void set_pars(int index); // if element is true, the parameter associated with the true element is varied in the Markov chain.
+    void set_param(int index); // if element is true, the parameter associated with the true element is varied in the Markov chain.
     void set_width(int index, double value);// fine tunes the width of a particular parameter
 
 
@@ -61,7 +61,7 @@ private:
     std::vector<bool> pars_bool;
     std::vector<double> width;
     std::vector<std::string> branchName;
-    
+
     TFile* file;
     TTree* tree;
     TRandom3* rnd;

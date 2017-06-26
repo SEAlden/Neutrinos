@@ -94,7 +94,7 @@ void Markov_Chain::startMH(std::vector<double>& currentPars, Nu_Fitter* oscObjec
             if(pars_bool[j]){
 
                 proposedPars[j]=rnd->Gaus(currentPars[j],width[j]);
-                oscObject->set_paras(j, proposedPars[j],'p');
+                oscObject->set_param(j, proposedPars[j],'p');
 
             }
 
@@ -226,9 +226,11 @@ void Markov_Chain::startMH(std::vector<double> &currentPars, Appearance *plusObj
 
             if(pars_bool[j]){
 
+              std::cout << j << std::endl;
+
                 proposedPars[j]=rnd->Gaus(currentPars[j],width[j]);
-                plusObj->set_paras(j, proposedPars[j],'p');
-                minusObj->set_paras(j, proposedPars[j],'p');
+                plusObj->set_param(j, proposedPars[j],'p');
+                minusObj->set_param(j, proposedPars[j],'p');
 
             }
 
@@ -242,6 +244,9 @@ void Markov_Chain::startMH(std::vector<double> &currentPars, Appearance *plusObj
 
         double accProb = TMath::Min(1.,TMath::Exp(currentLLH-proposedLLH));
         double fRandom = rnd->Rndm();
+
+        // std::cout << "i " << i << " accprob " << accProb << " fRandom " << fRandom << " current LLH " << currentLLH << " proposed LLH " << proposedLLH <<  " parameter 3 current: " << currentPars[3] << " parameter 3 proposed:" << proposedPars[3] << std::endl;
+        std::cout << "i " << i << " accprob " << accProb << " fRandom " << fRandom << " current LLH " << currentLLH << " proposed LLH " << proposedLLH <<  " parameter 3 current: " << currentPars[3] << " parameter 3 proposed:" << proposedPars[3] << std::endl;
 
         if ( fRandom <= accProb )
         {
@@ -274,7 +279,7 @@ void Markov_Chain::startMH(std::vector<double> &currentPars, Appearance *plusObj
 
 
 
-void Markov_Chain::set_pars(int index){
+void Markov_Chain::set_param(int index){
 
     pars_bool[index] = true;
 
