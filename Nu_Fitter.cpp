@@ -37,7 +37,7 @@ Nu_Fitter::Nu_Fitter(int kNuBarVar, std::string path, std::string filename1, std
     currentPars.push_back(2.4e-3);//DM2 : 1
     currentPars.push_back(0.5); //theta23 : 2
     currentPars.push_back(0.025); //theta13 : 3
-    currentPars.push_back(7.6e-3); //dm2 : 4
+    currentPars.push_back(7.6e-5); //dm2 : 4
     currentPars.push_back(0.312); //theta12 : 5
     currentPars.push_back(0); // deltacp : 6
     currentPars.push_back(10); // n : 7
@@ -47,7 +47,7 @@ Nu_Fitter::Nu_Fitter(int kNuBarVar, std::string path, std::string filename1, std
     proposedPars.push_back(2.4e-3);//DM2 : 1
     proposedPars.push_back(0.5); //theta23 : 2
     proposedPars.push_back(0.025); //theta13 : 3
-    proposedPars.push_back(7.6e-3); //dm2 : 4
+    proposedPars.push_back(7.6e-5); //dm2 : 4
     proposedPars.push_back(0.312); //theta12 : 5
     proposedPars.push_back(0); // deltacp : 6
     proposedPars.push_back(10); // n : 7
@@ -64,7 +64,7 @@ Nu_Fitter::Nu_Fitter(int kNuBarVar, std::string path, std::string filename1, std
     parsName.push_back("n"); // n : 7
     parsName.push_back("Beta"); // beta : 8
 
-
+    // _Plot = new TH1F("_Plot", "some plot title;Energy(GeV);some y axis",200,0,10,20,10,30);
 
 }
 
@@ -81,10 +81,12 @@ void Nu_Fitter::make_sum(char hist_type, bool oscillate){
 
     if(oscillate){ // considers neutrino oscillation
 
+      //Appearance
         in_nu1 = 2;
         out_nu1 = 1;
+      // Disappearance
         in_nu2 = 1;
-        out_nu2 = 2;
+        out_nu2 = 1;
 
     }
 
@@ -116,9 +118,10 @@ void Nu_Fitter::make_sum(char hist_type, bool oscillate){
 
         if(hist_type=='d'){
 
+          // neutrino PMNS
             bNu->SetMNS( currentPars[5], currentPars[3], currentPars[2], currentPars[4], currentPars[1], currentPars[6] , E, kSquared, kNuBar );
 
-
+          // antineutrino PMNS
             bNu2->SetMNS( currentPars[5], currentPars[3], currentPars[2], currentPars[4], currentPars[1], currentPars[6] , E, kSquared, -1*kNuBar );
         }
 
@@ -130,28 +133,30 @@ void Nu_Fitter::make_sum(char hist_type, bool oscillate){
             bNu2->SetMNS( proposedPars[5], proposedPars[3], proposedPars[2], proposedPars[4], proposedPars[1], proposedPars[6] , E, kSquared, -1*kNuBar );
 
         }
+
         bNu->propagateLinear( 1*kNuBar, BasePath, Density);
 
         bNu2->propagateLinear( -1*kNuBar, BasePath, Density);
 
         // individual probabilities for each file
-        osci_prob1 = bNu->GetProb(in_nu1,out_nu1);
-        osci_prob2 = bNu2->GetProb(in_nu1,out_nu1);
-        osci_prob3 = bNu2->GetProb(in_nu2,out_nu2);
-        osci_prob4 = bNu2->GetProb(in_nu2,out_nu2);
+        osci_prob1 = bNu->GetProb(in_nu1,out_nu1);//2,1
+        osci_prob2 = bNu2->GetProb(in_nu1,out_nu1);//-2,-1
+        osci_prob3 = bNu->GetProb(in_nu2,out_nu2);//1,1
+        osci_prob4 = bNu2->GetProb(in_nu2,out_nu2);//-1,-1
         bin_content1 = _input1->GetBinContent(i);
         bin_content2 = _input2->GetBinContent(i);
         bin_content3 = _input3->GetBinContent(i);
         bin_content4 = _input4->GetBinContent(i);
 
-        // std::cout << "i: " << i <<"\tb1: " << bin_content1 << "\tb2: " << bin_content2 << "\tb3: " << bin_content3 << "\tb4: " << bin_content4 << std::endl;
+        std::cout << "i: " << i <<"\tp1: " << osci_prob1 << "\tp2: " << osci_prob2 << "\tp3: " << osci_prob3 << "\tp4: " << osci_prob4 << std::endl;
 
 
 
         if(hist_type == 'd'){ // applies changes to the _Data histogram
 
             // sum the files
-            weight = (1./currentPars[8])*sigma_cc(2,E)*osci_prob1*bin_content1 + currentPars[8]*sigma_cc(-2,E)*osci_prob2*bin_content2 + (1./currentPars[8]*sigma_cc(1,E))*osci_prob3*bin_content3 + currentPars[8]*sigma_cc(-1,E)*osci_prob4*bin_content4;
+            // weight = (1./currentPars[8])*sigma_cc(2,E)*osci_prob1*bin_content1 + currentPars[8]*sigma_cc(-2,E)*osci_prob2*bin_content2 + (1./currentPars[8]*sigma_cc(1,E))*osci_prob3*bin_content3 + currentPars[8]*sigma_cc(-1,E)*osci_prob4*bin_content4;
+            weight = (1./currentPars[8])*osci_prob1*bin_content1; //+ currentPars[8]*sigma_cc(-2,E)*osci_prob2*bin_content2 + (1./currentPars[8]*sigma_cc(1,E))*osci_prob3*bin_content3 + currentPars[8]*sigma_cc(-1,E)*osci_prob4*bin_content4;
             _Data->SetBinContent(i,weight);
 
             std::cout << "i: " << i << "\tE: " << E << "\t_Data: " << _Data->GetBinContent(i) << std::endl;
@@ -228,13 +233,16 @@ void Nu_Fitter::show_hist(char hist_type){
     //PLOTTING
     TCanvas *c1 = new TCanvas("c1","Canvas",2000,1000);
     std::cout << "\n\n\nIn show_hist()" << std::endl;
+
+    double E_axis,content;
     if(hist_type == 'd'){
       for(int i = 1; i <= nbin; i++){
-        double foo = _Data->GetBinContent(i);
-        double E_axis = _Data->GetBinCenter(i);
+        content = _Data->GetBinContent(i);
+        E_axis = _Data->GetBinCenter(i);
+        // _Plot->Fill(E_axis,content);
         // std::cout << "i: " << i << "\tE: " << E_axis <<"\tvalue: " << foo << std::endl;
       }
-      _Data->Draw("HIST SAME C"); // to plot histogram without original error bar
+      _Data->Draw("HIST"); // to plot histogram without original error bar
     }
 
     else if(hist_type=='p'){

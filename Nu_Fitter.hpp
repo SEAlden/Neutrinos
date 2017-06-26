@@ -92,7 +92,7 @@ protected:
     TH1D* _input2;// nu mu bar
     TH1D* _input3;// nu e
     TH1D* _input4;// nu e bar
-    TH1D* plot;
+    TH1F* _Plot;
 
 
 
