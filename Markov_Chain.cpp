@@ -71,70 +71,70 @@ Markov_Chain::Markov_Chain(std::vector<double> &obj_pars, std::vector<std::strin
 Markov_Chain::~Markov_Chain(){};
 
 //Nu_Fitter MCMC:
-void Markov_Chain::startMH(std::vector<double>& currentPars, Nu_Fitter* oscObject){
-
-    currentLLH = oscObject->getLLH();
-
-    for(int i=0; i<steps; i++){
-
-        if(i%1000==0 || i==0){
-
-            if(i==0){
-                std::cout << "Initialising random walk..." << std::endl;
-            }
-
-            else{
-                std::cout << "Running random walk..." << std::endl;
-            }
-
-        }
-
-        for(int j=0; j<currentPars.size(); j++) {
-
-            if(pars_bool[j]){
-
-                proposedPars[j]=rnd->Gaus(currentPars[j],width[j]);
-                oscObject->set_param(j, proposedPars[j],'p');
-
-            }
-
-            oscObject->make_sum('p',true);
-
-        }
-
-        proposedLLH = oscObject->getLLH();
-
-        double accProb = TMath::Min(1.,TMath::Exp(currentLLH-proposedLLH));
-        double fRandom = rnd->Rndm();
-        // std::cout << "i " << i << " accprob " << accProb << " fRandom " << fRandom << " current LLH " << currentLLH << " proposed LLH " << proposedLLH <<  " parameter 2 current: " << currentPars[2] << " parameter 2 proposed:" << proposedPars[2] << std::endl;
-
-        if ( fRandom <= accProb )
-        {
-            for(int k=0; k<currentPars.size(); k++)
-            {
-                if(pars_bool[k]){
-                    currentPars[k]=proposedPars[k];
-                    //std::cout << "i " << i << " proposed " << proposedPars[k] <<std::endl;
-                }
-
-            }
-            currentLLH=proposedLLH;
-
-        }
-        //std::cout << "i " << i << " Theta23 " << proposedPars[2] <<std::endl;
-
-        tree->Fill();
-
-        if(i==steps-1){
-            std::cout << "Metropolis-Hastings algorithm completed." << std::endl;
-        }
-
-    }
-
-    tree->Write();
-    file->Close();
-
-}
+// void Markov_Chain::startMH(std::vector<double>& currentPars, Nu_Fitter* oscObject){
+//
+//     currentLLH = oscObject->getLLH();
+//
+//     for(int i=0; i<steps; i++){
+//
+//         if(i%1000==0 || i==0){
+//
+//             if(i==0){
+//                 std::cout << "Initialising random walk..." << std::endl;
+//             }
+//
+//             else{
+//                 std::cout << "Running random walk..." << std::endl;
+//             }
+//
+//         }
+//
+//         for(int j=0; j<currentPars.size(); j++) {
+//
+//             if(pars_bool[j]){
+//
+//                 proposedPars[j]=rnd->Gaus(currentPars[j],width[j]);
+//                 oscObject->set_param(j, proposedPars[j],'p');
+//
+//             }
+//
+//             oscObject->make_sum('p',true);
+//
+//         }
+//
+//         proposedLLH = oscObject->getLLH();
+//
+//         double accProb = TMath::Min(1.,TMath::Exp(currentLLH-proposedLLH));
+//         double fRandom = rnd->Rndm();
+//         // std::cout << "i " << i << " accprob " << accProb << " fRandom " << fRandom << " current LLH " << currentLLH << " proposed LLH " << proposedLLH <<  " parameter 2 current: " << currentPars[2] << " parameter 2 proposed:" << proposedPars[2] << std::endl;
+//
+//         if ( fRandom <= accProb )
+//         {
+//             for(int k=0; k<currentPars.size(); k++)
+//             {
+//                 if(pars_bool[k]){
+//                     currentPars[k]=proposedPars[k];
+//                     //std::cout << "i " << i << " proposed " << proposedPars[k] <<std::endl;
+//                 }
+//
+//             }
+//             currentLLH=proposedLLH;
+//
+//         }
+//         //std::cout << "i " << i << " Theta23 " << proposedPars[2] <<std::endl;
+//
+//         tree->Fill();
+//
+//         if(i==steps-1){
+//             std::cout << "Metropolis-Hastings algorithm completed." << std::endl;
+//         }
+//
+//     }
+//
+//     tree->Write();
+//     file->Close();
+//
+// }
 
 //Disappearance MCMC:
 void Markov_Chain::startMH(std::vector<double> &currentPars, Disappearance* oscObject, bool dis){
@@ -235,8 +235,8 @@ void Markov_Chain::startMH(std::vector<double> &currentPars, Appearance *plusObj
             }
 
             //re-make the histograms again with newly updated parameters
-            plusObj->make_sum('p',true);
-            minusObj->make_sum('p',true);
+            plusObj->make_sum('p','a',true);
+            minusObj->make_sum('p','a',true);
 
         }
 
