@@ -44,9 +44,9 @@ public:
     Nu_Fitter(int kNuBarVar, std::string path, std::string filename1, std::string filename2, std::string filename3, std::string filename4); // overloaded constructor: takes data from two files instead
     ~Nu_Fitter();
 
-    void make_sum(char hist_type, bool oscillate);
+    void make_sum(char hist_type, char osc_mode, bool oscillate);
     // applies probability to each raw histogram and then sums them up.
-    // Command: hist_type: 'd' for (fake) data, 'p' for prediction; oscillate: true for oscillation, false for no oscillation
+    // Command: hist_type: 'd' for (fake) data, 'p' for prediction; osc_mode: 'd' for disappearance; 'a' for appearanceoscillate: true for oscillation, false for no oscillation
 
     void print_kNu(); //tells user what value kNuBar has at the moment
 

@@ -26,6 +26,8 @@ Nu_Fitter::Nu_Fitter(int kNuBarVar, std::string path, std::string filename1, std
 
     _Data  = (TH1D*)_input1->Clone("Prob");// overwrite with oscillation
     _Prediction = (TH1D*)_input1->Clone("Prob");// overwrite with markov chain
+    _Data->SetTitle("Some make_sum1 title");
+
     kSquared  = true; // hard coded for now
     BasePath = 295; //km
     Density = 2.3;
@@ -72,7 +74,7 @@ Nu_Fitter::Nu_Fitter(int kNuBarVar, std::string path, std::string filename1, std
 Nu_Fitter::~Nu_Fitter(){}
 
 
-void Nu_Fitter::make_sum(char hist_type, bool oscillate){
+void Nu_Fitter::make_sum(char hist_type, char osc_mode, bool oscillate){
 
   std::cout << "\n\n\nIn make_sum()" << std::endl;
 
@@ -148,25 +150,46 @@ void Nu_Fitter::make_sum(char hist_type, bool oscillate){
         bin_content3 = _input3->GetBinContent(i);
         bin_content4 = _input4->GetBinContent(i);
 
-        std::cout << "i: " << i <<"\tp1: " << osci_prob1 << "\tp2: " << osci_prob2 << "\tp3: " << osci_prob3 << "\tp4: " << osci_prob4 << std::endl;
+        // std::cout << "i: " << i <<"\tp1: " << osci_prob1 << "\tp2: " <<6 osci_prob2 << "\tp3: " << osci_prob3 << "\tp4: " << osci_prob4 << std::endl;
 
 
 
         if(hist_type == 'd'){ // applies changes to the _Data histogram
 
-            // sum the files
-            // weight = (1./currentPars[8])*sigma_cc(2,E)*osci_prob1*bin_content1 + currentPars[8]*sigma_cc(-2,E)*osci_prob2*bin_content2 + (1./currentPars[8]*sigma_cc(1,E))*osci_prob3*bin_content3 + currentPars[8]*sigma_cc(-1,E)*osci_prob4*bin_content4;
-            weight = (1./currentPars[8])*osci_prob1*bin_content1; //+ currentPars[8]*sigma_cc(-2,E)*osci_prob2*bin_content2 + (1./currentPars[8]*sigma_cc(1,E))*osci_prob3*bin_content3 + currentPars[8]*sigma_cc(-1,E)*osci_prob4*bin_content4;
+          if(osc_mode == 'd'){ //Disappearance case
+            weight = (1./currentPars[8])*sigma_cc(2,E)*osci_prob1*bin_content1 + currentPars[8]*sigma_cc(-2,E)*osci_prob2*bin_content2 + (1./currentPars[8]*sigma_cc(2,E))*osci_prob3*bin_content3 + currentPars[8]*sigma_cc(-2,E)*osci_prob4*bin_content4;
+          }
+
+          else if(osc_mode == 'a'){ //Appearance case
+            weight = (1./currentPars[8])*sigma_cc(1,E)*osci_prob1*bin_content1 + currentPars[8]*sigma_cc(-1,E)*osci_prob2*bin_content2 + (1./currentPars[8]*sigma_cc(1,E))*osci_prob3*bin_content3 + currentPars[8]*sigma_cc(-1,E)*osci_prob4*bin_content4;
+          }
+
+          else{
+            std::cout << "make_sum() Error:\nInvalid osc_mode command." << std::endl;
+            weight = 0;
+          }
+
             _Data->SetBinContent(i,weight);
 
-            std::cout << "i: " << i << "\tE: " << E << "\t_Data: " << _Data->GetBinContent(i) << std::endl;
+            std::cout << "i: " << i << "\tE: " << E << "\t_Data: " << _Data->GetBinContent(i) << "\tw: " << weight << std::endl;
 
         }
 
         else if(hist_type == 'p'){ // applies changes to the _Prediction histogram
 
-            // sum the files
-            weight = (1./proposedPars[8])*sigma_cc(2,E)*osci_prob1*bin_content1 + proposedPars[8]*sigma_cc(-2,E)*osci_prob2*bin_content2 + (1./proposedPars[8])*sigma_cc(1,E)*osci_prob3*bin_content3 + proposedPars[8]*sigma_cc(-1,E)*osci_prob4*bin_content4;
+          if(osc_mode == 'd'){ //Disappearance case
+            weight = (1./proposedPars[8])*sigma_cc(2,E)*osci_prob1*bin_content1 + proposedPars[8]*sigma_cc(-2,E)*osci_prob2*bin_content2 + (1./proposedPars[8]*sigma_cc(2,E))*osci_prob3*bin_content3 + proposedPars[8]*sigma_cc(-2,E)*osci_prob4*bin_content4;
+          }
+
+          else if(osc_mode == 'a'){ //Appearance case
+            weight = (1./proposedPars[8])*sigma_cc(1,E)*osci_prob1*bin_content1 + proposedPars[8]*sigma_cc(-1,E)*osci_prob2*bin_content2 + (1./proposedPars[8]*sigma_cc(1,E))*osci_prob3*bin_content3 + proposedPars[8]*sigma_cc(-1,E)*osci_prob4*bin_content4;
+          }
+
+          else{
+            std::cout << "make_sum() Error:\nInvalid osc_mode command." << std::endl;
+            weight = 0;
+          }
+            
             _Prediction->SetBinContent(i,weight);
 
         }
@@ -289,19 +312,19 @@ double Nu_Fitter::sigma_cc(int nu_mode, double bin_E){
   double sig; // cm^2/nucleon
 
   if(nu_mode==1){ //nue mode
-    sig = 0.7*10e-38*bin_E;
+    sig = (0.7*10e-38)*bin_E;
   }
 
   else if(nu_mode==-1){ //nueb mode
-    sig = 0.25*10e-38*bin_E;
+    sig = (0.25*10e-38)*bin_E;
   }
 
   else if(nu_mode==2){ //numu mode
-    sig = 0.74*10e-38*bin_E;
+    sig = (0.74*10e-38)*bin_E;
   }
 
   else if(nu_mode==-2){
-    sig = 0.26*10e-38*bin_E;
+    sig = (0.26*10e-38)*bin_E;
   }
 
   else{
