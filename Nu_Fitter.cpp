@@ -74,6 +74,8 @@ Nu_Fitter::~Nu_Fitter(){}
 
 void Nu_Fitter::make_sum(char hist_type, bool oscillate){
 
+  std::cout << "\n\n\nIn make_sum()" << std::endl;
+
     // if statement for probability for oscillation or probability of no oscillation
     int in_nu1, out_nu1, in_nu2, out_nu2;
 
@@ -142,6 +144,8 @@ void Nu_Fitter::make_sum(char hist_type, bool oscillate){
         bin_content3 = _input3->GetBinContent(i);
         bin_content4 = _input4->GetBinContent(i);
 
+        // std::cout << "i: " << i <<"\tb1: " << bin_content1 << "\tb2: " << bin_content2 << "\tb3: " << bin_content3 << "\tb4: " << bin_content4 << std::endl;
+
 
 
         if(hist_type == 'd'){ // applies changes to the _Data histogram
@@ -149,6 +153,8 @@ void Nu_Fitter::make_sum(char hist_type, bool oscillate){
             // sum the files
             weight = (1./currentPars[8])*sigma_cc(2,E)*osci_prob1*bin_content1 + currentPars[8]*sigma_cc(-2,E)*osci_prob2*bin_content2 + (1./currentPars[8]*sigma_cc(1,E))*osci_prob3*bin_content3 + currentPars[8]*sigma_cc(-1,E)*osci_prob4*bin_content4;
             _Data->SetBinContent(i,weight);
+
+            std::cout << "i: " << i << "\tE: " << E << "\t_Data: " << _Data->GetBinContent(i) << std::endl;
 
         }
 
@@ -169,6 +175,8 @@ void Nu_Fitter::make_sum(char hist_type, bool oscillate){
         // std::cout << "Data: " << _Data->GetBinContent(i) << "\tPrediciton: " << _Prediction->GetBinContent(i) <<  std::endl;
 
     }
+
+
 
 }
 
@@ -212,15 +220,31 @@ double Nu_Fitter::getLLH(){
 
 }
 
-void Nu_Fitter::show_Prediction(){
+void Nu_Fitter::show_hist(char hist_type){
 
     //allows Canvas to open in
     TApplication *app = new TApplication("app",0,0);
 
     //PLOTTING
     TCanvas *c1 = new TCanvas("c1","Canvas",2000,1000);
+    std::cout << "\n\n\nIn show_hist()" << std::endl;
+    if(hist_type == 'd'){
+      for(int i = 1; i <= nbin; i++){
+        double foo = _Data->GetBinContent(i);
+        double E_axis = _Data->GetBinCenter(i);
+        // std::cout << "i: " << i << "\tE: " << E_axis <<"\tvalue: " << foo << std::endl;
+      }
+      _Data->Draw("HIST SAME C"); // to plot histogram without original error bar
+    }
 
-    _Prediction->Draw("e");
+    else if(hist_type=='p'){
+      _Prediction->Draw("HIST SAME C"); // to plot histogram without original error bar
+    }
+
+    else{
+      std::cout << "show_hist() Error:\nInvalid command. Please close the canvas and try again." << std::endl;
+    }
+
     c1->Update();
     app->Run(); // need this to give options for saving and zoom etc
 
@@ -236,7 +260,7 @@ std::vector<std::string> Nu_Fitter::return_sparam(){
   return parsName;
 }
 
-void Nu_Fitter::set_paras(int index, double val, char vector_type){
+void Nu_Fitter::set_param(int index, double val, char vector_type){
     if(vector_type=='c'){
         currentPars[index] = val;
     }
@@ -279,4 +303,15 @@ double Nu_Fitter::sigma_cc(int nu_mode, double bin_E){
 
   return sig*nucleons; // returns cross section (cm^2)
 
+}
+
+void Nu_Fitter::add_param(double value, std::string name){
+
+  currentPars.push_back(value);
+  parsName.push_back(name);
+
+  int last_element = currentPars.size()-1;
+  // int last_element = currentPars.back().c;
+
+  std::cout << "Parameter: " << name << "\tValue: " << value << "\tIndex: " << currentPars[last_element] << std::endl;
 }

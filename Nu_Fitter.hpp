@@ -52,19 +52,23 @@ public:
 
     double getLLH(); // calculates the log likelihood
 
-    void show_Prediction(); // show the prediction histogram for analysis
+    void show_hist(char hist_type);
+    // show the prediction histogram for analysis
+    // Command: hist_type: 'd' for (fake) data, 'p' for prediction;
 
     std::vector<double> return_cparam(); // return currentsPars
 
     std::vector<std::string> return_sparam(); // return parsName
 
-    void set_paras(int index, double val, char vector_type);
+    void set_param(int index, double val, char vector_type);
     //redefine the value of the index'th parameter
     //Command: vector_type: 'c' to set currentPars, 'p' to set proposedPars
 
     double sigma_cc(int nu_mode, double bin_E);
     // returns the pre-factor when taking into account interaction cross-section
     //Command: 1: nue; -1: nueb; 2: numu; -2:numub
+
+    void add_param(double value, std::string name); // adds new parameter into Nu_Fitter
 
 protected:
 
@@ -83,11 +87,12 @@ protected:
     std::vector<std::string> parsName;
 
     TH1D* _Data;
+    TH1D* _Prediction;
     TH1D* _input1;// nu mu
     TH1D* _input2;// nu mu bar
     TH1D* _input3;// nu e
     TH1D* _input4;// nu e bar
-    TH1D* _Prediction;
+    TH1D* plot;
 
 
 
