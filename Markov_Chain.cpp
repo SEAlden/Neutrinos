@@ -116,7 +116,7 @@ Markov_Chain::~Markov_Chain(){};
 //                     currentPars[k]=proposedPars[k];
 //                     //std::cout << "i " << i << " proposed " << proposedPars[k] <<std::endl;
 //                 }
-//
+//make_sum 
 //             }
 //             currentLLH=proposedLLH;
 //
