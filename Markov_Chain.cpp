@@ -12,8 +12,7 @@ Markov_Chain::Markov_Chain(std::vector<double> &obj_pars, std::vector<std::strin
 
     steps = nstep;
     file = new TFile(filename.c_str(),"RECREATE");
-    tree = new TTree("tree","");
-
+    tree = new TTree("t","");
 
     for(int i = 0; i < parsName.size();i++){ // creates the leaflist for each parameter branch
       branchName.push_back(parsName[i]+"/D");
@@ -30,6 +29,8 @@ Markov_Chain::Markov_Chain(std::vector<double> &obj_pars, std::vector<std::strin
       width.push_back(obj_pars[j]/width_factor); // can be fine-tuned with set_width(...)
 
     }
+
+    tree->Branch("LLH",&currentLLH,"LLH/D");
 
     tree->Fill();
 
@@ -69,6 +70,190 @@ Markov_Chain::Markov_Chain(std::vector<double> &obj_pars, std::vector<std::strin
 }
 
 Markov_Chain::~Markov_Chain(){};
+
+//Disappearance MCMC:
+void Markov_Chain::startMH(std::vector<double> &currentPars, Disappearance* oscObject, bool dis){
+
+    currentLLH = oscObject->getLLH();
+
+    for(int i=0; i<steps; i++){
+        if(i%1000==0 || i==0){
+
+            if(i==0){
+              std::cout << "Initialising random walk..." << std::endl;
+            }
+            else{
+              std::cout << "i " << i << "Running random walk..." << std::endl;
+            }
+
+        }
+
+        for(int k = 0; k<currentPars.size();k++){
+            if(pars_bool[k]){
+
+                proposedPars[k]=rnd->Gaus(currentPars[k],width[k]);
+                oscObject->set_paras_d(k, proposedPars[k],'p');
+
+            }
+
+        }
+
+        oscObject->taylor('p');
+        proposedLLH = oscObject->getLLH();
+
+        apply_constraint();
+
+        double accProb = TMath::Min(1.,TMath::Exp(currentLLH-proposedLLH));
+        double fRandom = rnd->Rndm();
+        std::cout << i << "\t" << currentLLH << "\t" << proposedLLH << "\t" << currentLLH-proposedLLH << std::endl;
+        std::cout << "i " << i << " accprob " << accProb << " fRandom " << fRandom << " current LLH " << currentLLH << " proposed LLH " << proposedLLH <<  " parameter 1 current: " << currentPars[1] << " parameter 1 proposed:" << proposedPars[1] << std::endl;
+         if ( fRandom <= accProb )
+        {
+
+            for(int m=0; m<currentPars.size(); m++)
+            {
+
+                if(pars_bool[m]){
+                    //count++;
+                  //  std::cout << "coef " << m << " " << currentPars[m] << " proposed " << m << " " << proposedPars[m] << std::endl;
+                    currentPars[m]=proposedPars[m];
+
+                  }
+
+            }
+
+            currentLLH=proposedLLH;
+        }
+
+        //std::cout << " 0 " << coef[0] << " 1 " << coef[1] << " 2 " << coef[2]  << std::endl;
+        tree->Fill();
+
+
+        if(i==steps-1){
+            std::cout << "Metropolis-Hastings algorithm completed." << std::endl;
+
+        }
+    }
+
+   // std::cout << count << std::endl;
+    tree->Write();
+    file->Close();
+
+}
+
+//Appearance MCMC:
+void Markov_Chain::startMH(std::vector<double> &currentPars, Appearance *plusObj, Appearance *minusObj){
+
+    std::cout << "Initialising random walk..." << std::endl;
+    currentLLH = plusObj->getLLH() + minusObj->getLLH(); // add LLH from two files
+
+    for(int i=0; i<steps; i++){
+
+        if(i%1000==0 || i==0){
+            std::cout << "Running random walk..." << std::endl;
+        }
+
+        for(int j=0; j<currentPars.size(); j++) {
+
+            if(pars_bool[j]){
+
+                proposedPars[j]=rnd->Gaus(currentPars[j],width[j]);
+                plusObj->set_param(j, proposedPars[j],'p');
+                minusObj->set_param(j, proposedPars[j],'p');
+
+            }
+
+            //re-make the histograms again with newly updated parameters
+            plusObj->make_sum('p','a',true);
+            minusObj->make_sum('p','a',true);
+
+        }
+
+        proposedLLH = plusObj->getLLH() + minusObj->getLLH();
+
+        apply_constraint();
+
+        double accProb = TMath::Min(1.,TMath::Exp(currentLLH-proposedLLH));
+        double fRandom = rnd->Rndm();
+        // std::cout << "i " << i << " accprob " << accProb << " fRandom " << fRandom << " current LLH " << currentLLH << " proposed LLH " << proposedLLH <<  " parameter 1 current: " << currentPars[1] << " parameter 1 proposed:" << proposedPars[1] << std::endl;
+
+        if ( fRandom <= accProb )
+        {
+            for(int k=0; k<currentPars.size(); k++)
+            {
+                if(pars_bool[k]){
+                    currentPars[k]=proposedPars[k];
+                    //std::cout << "i " << i << " proposed " << proposedPars[k] <<std::endl;
+                }
+
+            }
+            currentLLH=proposedLLH;
+
+        }
+        //std::cout << "i " << i << " Theta23 " << proposedPars[2] <<std::endl;
+
+        tree->Fill();
+
+        if(i==steps-1){
+            std::cout << "Metropolis-Hastings algorithm completed." << std::endl;
+        }
+
+    }
+
+    tree->Write();
+    file->Close();
+
+
+}
+
+
+
+void Markov_Chain::set_param(int index){
+
+    pars_bool[index] = true;
+
+}
+
+void Markov_Chain::set_width(int index, double value){
+
+    width[index] = value;
+
+}
+
+void Markov_Chain::apply_constraint(){
+
+  if(proposedPars[1]<0){ // if DM2<0
+    proposedLLH+=1.0E6;
+  }
+
+  if(proposedPars[2]<0 || proposedPars[2]>1){ // theta13>1 or theta13<0
+    proposedLLH+=1.0E6;
+  }
+
+  if(proposedPars[3]<0 || proposedPars[3]>1){ // theta13>1 or theta13<0
+    proposedLLH+=1.0E6;
+  }
+
+  if(proposedPars[4]<0){ // if dm2<2
+    proposedLLH+=1.0E6;
+  }
+
+  if(proposedPars[5]<0 || proposedPars[5]>1){ // theta13>1 or theta13<0
+    proposedLLH+=1.0E6;
+  }
+
+  if(proposedPars[6]>TMath::Pi() || proposedPars[6]<-1*TMath::Pi()){ // deltaCP>Pi or deltaCP<-Pi
+    proposedLLH+=1.0E6;
+  }
+
+  if(proposedPars[8] <0){ //beta < 0
+    proposedLLH+=1.0E6;
+  }
+
+
+
+}
+
 
 //Nu_Fitter MCMC:
 // void Markov_Chain::startMH(std::vector<double>& currentPars, Nu_Fitter* oscObject){
@@ -116,7 +301,7 @@ Markov_Chain::~Markov_Chain(){};
 //                     currentPars[k]=proposedPars[k];
 //                     //std::cout << "i " << i << " proposed " << proposedPars[k] <<std::endl;
 //                 }
-//make_sum 
+//make_sum
 //             }
 //             currentLLH=proposedLLH;
 //
@@ -135,158 +320,3 @@ Markov_Chain::~Markov_Chain(){};
 //     file->Close();
 //
 // }
-
-//Disappearance MCMC:
-void Markov_Chain::startMH(std::vector<double> &currentPars, Disappearance* oscObject, bool dis){
-    currentLLH = oscObject->getLLH();
-    //int count =0;
-
-    for(int i=0; i<steps; i++){
-        if(i%1000==0 || i==0){
-
-            if(i==0){
-              std::cout << "Initialising random walk..." << std::endl;
-            }
-            else{
-              std::cout << "i " << i << "Running random walk..." << std::endl;
-            }
-
-        }
-
-        for(int k = 0; k<currentPars.size();k++){
-            if(pars_bool[k]){
-
-                proposedPars[k]=rnd->Gaus(currentPars[k],width[k]);
-                oscObject->set_paras_d(k, proposedPars[k],'p');
-
-            }
-
-        }
-
-        oscObject->taylor('p');
-        proposedLLH = oscObject->getLLH();
-
-        double accProb = TMath::Min(1.,TMath::Exp(currentLLH-proposedLLH));
-        double fRandom = rnd->Rndm();
-        //std::cout << "i " << i << " accprob " << accProb << " fRandom " << fRandom << " current LLH " << currentLLH << " proposed LLH " << proposedLLH <<  " parameter 1 current: " << coef[1] << " parameter 1 proposed:" << proposedcoef[1] << std::endl;
-         if ( fRandom <= accProb )
-        {
-
-            for(int m=0; m<currentPars.size(); m++)
-            {
-
-                if(pars_bool[m]){
-                    //count++;
-                  //  std::cout << "coef " << m << " " << currentPars[m] << " proposed " << m << " " << proposedPars[m] << std::endl;
-                    currentPars[m]=proposedPars[m];
-
-                  }
-
-            }
-
-            currentLLH=proposedLLH;
-        }
-
-        //std::cout << " 0 " << coef[0] << " 1 " << coef[1] << " 2 " << coef[2]  << std::endl;
-        tree->Fill();
-
-
-        if(i==steps-1){
-            std::cout << "Metropolis-Hastings algorithm completed." << std::endl;
-
-        }
-    }
-
-   // std::cout << count << std::endl;
-    tree->Write();
-    file->Close();
-
-}
-
-//Appearance MCMC:
-void Markov_Chain::startMH(std::vector<double> &currentPars, Appearance *plusObj, Appearance *minusObj){
-
-    currentLLH = plusObj->getLLH() + minusObj->getLLH(); // add LLH from two files
-
-    for(int i=0; i<steps; i++){
-
-        if(i%1000==0 || i==0){
-
-            if(i==0){
-                std::cout << "Initialising random walk..." << std::endl;
-            }
-
-            else{
-                std::cout << "Running random walk..." << std::endl;
-            }
-
-        }
-
-        for(int j=0; j<currentPars.size(); j++) {
-
-            if(pars_bool[j]){
-
-              std::cout << j << std::endl;
-
-                proposedPars[j]=rnd->Gaus(currentPars[j],width[j]);
-                plusObj->set_param(j, proposedPars[j],'p');
-                minusObj->set_param(j, proposedPars[j],'p');
-
-            }
-
-            //re-make the histograms again with newly updated parameters
-            plusObj->make_sum('p','a',true);
-            minusObj->make_sum('p','a',true);
-
-        }
-
-        proposedLLH = plusObj->getLLH() + minusObj->getLLH();
-
-        double accProb = TMath::Min(1.,TMath::Exp(currentLLH-proposedLLH));
-        double fRandom = rnd->Rndm();
-
-        // std::cout << "i " << i << " accprob " << accProb << " fRandom " << fRandom << " current LLH " << currentLLH << " proposed LLH " << proposedLLH <<  " parameter 3 current: " << currentPars[3] << " parameter 3 proposed:" << proposedPars[3] << std::endl;
-        std::cout << "i " << i << " accprob " << accProb << " fRandom " << fRandom << " current LLH " << currentLLH << " proposed LLH " << proposedLLH <<  " parameter 3 current: " << currentPars[3] << " parameter 3 proposed:" << proposedPars[3] << std::endl;
-
-        if ( fRandom <= accProb )
-        {
-            for(int k=0; k<currentPars.size(); k++)
-            {
-                if(pars_bool[k]){
-                    currentPars[k]=proposedPars[k];
-                    //std::cout << "i " << i << " proposed " << proposedPars[k] <<std::endl;
-                }
-
-            }
-            currentLLH=proposedLLH;
-
-        }
-        //std::cout << "i " << i << " Theta23 " << proposedPars[2] <<std::endl;
-
-        tree->Fill();
-
-        if(i==steps-1){
-            std::cout << "Metropolis-Hastings algorithm completed." << std::endl;
-        }
-
-    }
-
-    tree->Write();
-    file->Close();
-
-
-}
-
-
-
-void Markov_Chain::set_param(int index){
-
-    pars_bool[index] = true;
-
-}
-
-void Markov_Chain::set_width(int index, double value){
-
-    width[index] = value;
-
-}
