@@ -242,8 +242,12 @@ void Markov_Chain::apply_constraint(){
     proposedLLH+=1.0E6;
   }
 
-  if(proposedPars[6]>TMath::Pi() || proposedPars[6]<-1*TMath::Pi()){ // deltaCP>Pi or deltaCP<-Pi
-    proposedLLH+=1.0E6;
+  if(proposedPars[6]>TMath::Pi()){ // deltaCP>Pi
+    proposedPars[6]-=2*TMath::Pi();
+  }
+
+  else if(proposedPars[6]<-1*TMath::Pi()){//deltaCP<-Pi
+    proposedPars[6]+=2*TMath::Pi();
   }
 
   if(proposedPars[8] <0){ //beta < 0
