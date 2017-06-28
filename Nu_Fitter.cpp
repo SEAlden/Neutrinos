@@ -74,9 +74,7 @@ Nu_Fitter::Nu_Fitter(int kNuBarVar, std::string path, std::string filename1, std
 Nu_Fitter::~Nu_Fitter(){}
 
 
-void Nu_Fitter::make_sum(char hist_type, char osc_mode, bool oscillate){
-
-  std::cout << "\n\n\nIn make_sum()" << std::endl;
+void Nu_Fitter::make_sum(char hist_type, char phenon_mode, bool oscillate){
 
     // if statement for probability for oscillation or probability of no oscillation
     int in_nu1, out_nu1, in_nu2, out_nu2;
@@ -118,7 +116,7 @@ void Nu_Fitter::make_sum(char hist_type, char osc_mode, bool oscillate){
 
         E = _input1->GetXaxis()->GetBinCenter(i);
 
-        if(hist_type=='d'){
+        if(hist_type=='f'){
 
           // neutrino PMNS
             bNu->SetMNS( currentPars[5], currentPars[3], currentPars[2], currentPars[4], currentPars[1], currentPars[6] , E, kSquared, kNuBar );
@@ -154,42 +152,42 @@ void Nu_Fitter::make_sum(char hist_type, char osc_mode, bool oscillate){
 
 
 
-        if(hist_type == 'd'){ // applies changes to the _Data histogram
+        if(hist_type == 'f'){ // applies changes to the _Data histogram
 
-          if(osc_mode == 'd'){ //Disappearance case
+          if(phenon_mode == 'd'){ //Disappearance case
             weight = (1./currentPars[8])*sigma_cc(2,E)*osci_prob1*bin_content1 + currentPars[8]*sigma_cc(-2,E)*osci_prob2*bin_content2 + (1./currentPars[8]*sigma_cc(2,E))*osci_prob3*bin_content3 + currentPars[8]*sigma_cc(-2,E)*osci_prob4*bin_content4;
           }
 
-          else if(osc_mode == 'a'){ //Appearance case
+          else if(phenon_mode == 'a'){ //Appearance case
             weight = (1./currentPars[8])*sigma_cc(1,E)*osci_prob1*bin_content1 + currentPars[8]*sigma_cc(-1,E)*osci_prob2*bin_content2 + (1./currentPars[8]*sigma_cc(1,E))*osci_prob3*bin_content3 + currentPars[8]*sigma_cc(-1,E)*osci_prob4*bin_content4;
           }
 
           else{
-            std::cout << "make_sum() Error:\nInvalid osc_mode command." << std::endl;
+            std::cout << "make_sum() Error:\nInvalid phenon_mode command." << std::endl;
             weight = 0;
           }
 
             _Data->SetBinContent(i,weight);
 
-            std::cout << "i: " << i << "\tE: " << E << "\t_Data: " << _Data->GetBinContent(i) << "\tw: " << weight << std::endl;
+            // std::cout << "i: " << i << "\tE: " << E << "\t_Data: " << _Data->GetBinContent(i) << "\tw: " << weight << std::endl;
 
         }
 
         else if(hist_type == 'p'){ // applies changes to the _Prediction histogram
 
-          if(osc_mode == 'd'){ //Disappearance case
+          if(phenon_mode == 'd'){ //Disappearance case
             weight = (1./proposedPars[8])*sigma_cc(2,E)*osci_prob1*bin_content1 + proposedPars[8]*sigma_cc(-2,E)*osci_prob2*bin_content2 + (1./proposedPars[8]*sigma_cc(2,E))*osci_prob3*bin_content3 + proposedPars[8]*sigma_cc(-2,E)*osci_prob4*bin_content4;
           }
 
-          else if(osc_mode == 'a'){ //Appearance case
+          else if(phenon_mode == 'a'){ //Appearance case
             weight = (1./proposedPars[8])*sigma_cc(1,E)*osci_prob1*bin_content1 + proposedPars[8]*sigma_cc(-1,E)*osci_prob2*bin_content2 + (1./proposedPars[8]*sigma_cc(1,E))*osci_prob3*bin_content3 + proposedPars[8]*sigma_cc(-1,E)*osci_prob4*bin_content4;
           }
 
           else{
-            std::cout << "make_sum() Error:\nInvalid osc_mode command." << std::endl;
+            std::cout << "make_sum() Error:\nInvalid phenon_mode command." << std::endl;
             weight = 0;
           }
-            
+
             _Prediction->SetBinContent(i,weight);
 
         }
@@ -255,16 +253,8 @@ void Nu_Fitter::show_hist(char hist_type){
 
     //PLOTTING
     TCanvas *c1 = new TCanvas("c1","Canvas",2000,1000);
-    std::cout << "\n\n\nIn show_hist()" << std::endl;
 
-    double E_axis,content;
-    if(hist_type == 'd'){
-      for(int i = 1; i <= nbin; i++){
-        content = _Data->GetBinContent(i);
-        E_axis = _Data->GetBinCenter(i);
-        // _Plot->Fill(E_axis,content);
-        // std::cout << "i: " << i << "\tE: " << E_axis <<"\tvalue: " << foo << std::endl;
-      }
+    if(hist_type == 'f'){
       _Data->Draw("HIST"); // to plot histogram without original error bar
     }
 
