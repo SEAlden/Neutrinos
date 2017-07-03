@@ -10,7 +10,7 @@ public:
   Appearance(int kNuBarVar, std::string path, std::string filename, std::string filename2, std::string filename3, std::string filename4);
   ~Appearance();
 
-  void set_beta();
+  // void set_beta();
 
 };
 
