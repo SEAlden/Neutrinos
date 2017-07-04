@@ -70,6 +70,12 @@ public:
 
     void add_param(double value, std::string name); // adds new parameter into Nu_Fitter
 
+    void get_integral(double l_bound, double u_bound); // gets the integral of _Data using lower and upper bound in energy(GeV)
+
+    void get_integral(); // gets the integral of _Data using lower and upper bound in energy(GeV)
+
+    void scale_factor(double factor); // when initialising _Data, multiplies the incoming histogram by a factor
+
 
 protected:
 
@@ -93,7 +99,11 @@ protected:
     TH1D* _input2;// nu mu bar
     TH1D* _input3;// nu e
     TH1D* _input4;// nu e bar
-    TH1F* _Plot;
+
+    //initialises Barger propagator pointers here
+    BargerPropagator   * bNu;
+    BargerPropagator   * bNu2;
+
 
 
 

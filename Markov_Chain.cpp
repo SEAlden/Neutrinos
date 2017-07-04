@@ -260,7 +260,7 @@ void Markov_Chain::apply_constraint(){
 
 
 //Nu_Fitter MCMC:
-// void Markov_Chain::startMH(std::vector<double>& currentPars, Nu_Fitter* oscObject){
+// void Markov_Chain::startMH(std::vector<double>& currentPars, Nu_Fitter* oscObject, char phenon_mode){
 //
 //     currentLLH = oscObject->getLLH();
 //
@@ -287,7 +287,7 @@ void Markov_Chain::apply_constraint(){
 //
 //             }
 //
-//             oscObject->make_sum('p',true);
+//             oscObject->make_sum('p',phenon_mode,true);
 //
 //         }
 //
@@ -305,7 +305,7 @@ void Markov_Chain::apply_constraint(){
 //                     currentPars[k]=proposedPars[k];
 //                     //std::cout << "i " << i << " proposed " << proposedPars[k] <<std::endl;
 //                 }
-//make_sum
+//
 //             }
 //             currentLLH=proposedLLH;
 //

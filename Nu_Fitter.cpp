@@ -66,7 +66,11 @@ Nu_Fitter::Nu_Fitter(int kNuBarVar, std::string path, std::string filename1, std
     parsName.push_back("n"); // n : 7
     parsName.push_back("Beta"); // beta : 8
 
-    // _Plot = new TH1F("_Plot", "some plot title;Energy(GeV);some y axis",200,0,10,20,10,30);
+
+    bNu = new BargerPropagator( );
+    bNu->UseMassEigenstates( false );
+    bNu2 = new BargerPropagator( );
+    bNu2->UseMassEigenstates( false );
 
 }
 
@@ -99,13 +103,13 @@ void Nu_Fitter::make_sum(char hist_type, char phenon_mode, bool oscillate){
 
     }
 
-    BargerPropagator   * bNu;
-    BargerPropagator   * bNu2;
-
-    bNu = new BargerPropagator( );
-    bNu->UseMassEigenstates( false );
-    bNu2 = new BargerPropagator( );
-    bNu2->UseMassEigenstates( false );
+    // BargerPropagator   * bNu;
+    // BargerPropagator   * bNu2;
+    //
+    // bNu = new BargerPropagator( );
+    // bNu->UseMassEigenstates( false );
+    // bNu2 = new BargerPropagator( );
+    // bNu2->UseMassEigenstates( false );
 
     double E,osci_prob1,osci_prob2,osci_prob3,osci_prob4,bin_content1,bin_content2,bin_content3,bin_content4,weight;
 
@@ -335,4 +339,83 @@ void Nu_Fitter::add_param(double value, std::string name){
   // int last_element = currentPars.back().c;
 
   std::cout << "Parameter: " << name << "\tValue: " << value << "\tIndex: " << currentPars[last_element] << std::endl;
+}
+
+void Nu_Fitter::get_integral(double E_lower, double E_upper){
+
+  double f_integral,l_bound,u_bound;
+
+  l_bound = E_lower;
+  u_bound = E_upper;
+
+  if(l_bound < 10 && u_bound < 10){
+
+    l_bound = l_bound/0.05;
+    u_bound = u_bound/0.05;
+
+    if(l_bound == 0){ // set it to be first bin
+      l_bound = 1;
+    }
+
+    f_integral = _Data->Integral(l_bound,u_bound);
+
+  }
+
+  else if(l_bound >10 && u_bound >10){
+
+    double interval = 10/0.05; // the number of bins before 10GeV
+    l_bound = l_bound-10 + interval;
+    u_bound = u_bound-10 + interval;
+    f_integral = _Data->Integral(l_bound,u_bound);
+
+  }
+
+  else if(l_bound <10 && u_bound>10){
+
+    double interval = 10/0.05;
+    l_bound = l_bound/0.05;
+    u_bound = u_bound-10 + interval;
+    f_integral = _Data->Integral(l_bound,u_bound);
+
+  }
+
+  else if(l_bound < 0 && u_bound < 0){
+    std::cout << "get_integral() error:\nInvalid boundaries." << std::endl;
+    f_integral=0;
+  }
+
+
+  std::cout <<"Lower energy boundary: " << E_lower << "GeV\tUpper energy boundary: " << E_upper << "GeV\nFile integral: " << f_integral << std::endl;
+
+}
+
+void Nu_Fitter::get_integral(){
+  double f_integral = _Data->Integral();
+
+  std::cout <<"Lower energy boundary: 0GeV\tUpper energy boundary: 30GeV\nFile integral: " << f_integral << std::endl;
+
+}
+
+void Nu_Fitter::scale_factor(double factor){
+
+  double scaled_weight;
+  for(int i =1; i < nbin; i++){
+
+    scaled_weight = factor*_input1->GetBinContent(i);
+    _input1->SetBinContent(i,scaled_weight);
+
+    scaled_weight = factor*_input2->GetBinContent(i);
+    _input2->SetBinContent(i,scaled_weight);
+
+    scaled_weight = factor*_input3->GetBinContent(i);
+    _input3->SetBinContent(i,scaled_weight);
+
+    scaled_weight = factor*_input4->GetBinContent(i);
+    _input4->SetBinContent(i,scaled_weight);
+
+  }
+
+  std::cout << "Scaling input file by factor " << factor << " completed." << std::endl;
+
+
 }
