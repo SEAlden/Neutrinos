@@ -10,7 +10,7 @@
 #include <iostream>
 #include <vector>
 
-Disappearance::Disappearance(int kNuBarVar, std::string path, std::string filename, std::string filename2, std::string filename3, std::string filename4, int mass):Nu_Fitter(kNuBarVar, path, filename, filename2, filename3, filename4){
+Disappearance::Disappearance(int kNuBarVar, std::string path, std::string filename, std::string filename2, std::string filename3, std::string filename4, int mass, std::string root_name, std::string root_file):Nu_Fitter(kNuBarVar, path, filename, filename2, filename3, filename4){
  
     if (mass == 1){
         dm_sq = currentPars[4];
@@ -26,17 +26,33 @@ Disappearance::Disappearance(int kNuBarVar, std::string path, std::string filena
     
     a = 1.27*L*dm_sq;
     
-    coefs.push_back(1.00043);
-    coefs.push_back(-0.00513335);
-    coefs.push_back(-0.81076);
-    coefs.push_back(-0.0217913);
-    coefs.push_back(0.223944);
-    coefs.push_back(0.0340821);
-    coefs.push_back(-0.0569585);
-    coefs.push_back(0.0133551);
-    coefs.push_back(-0.000970247);
+    currentPars.push_back(1.00043);
+    currentPars.push_back(-0.00513335);
+    currentPars.push_back(-0.81076);
+    currentPars.push_back(-0.0217913);
+    currentPars.push_back(0.223944);
+    currentPars.push_back(0.0340821);
+    currentPars.push_back(-0.0569585);
+    currentPars.push_back(0.0133551);
+    currentPars.push_back(-0.000970247);
     
-    std::cout << "tag A" << std::endl;
+   // std::cout << currentPars.size()<< std::endl;
+    
+    parsName.push_back("First");
+    parsName.push_back("Second");
+    parsName.push_back("Third");
+    parsName.push_back("Fourth");
+    parsName.push_back("Fifth");
+    parsName.push_back("Sixth");
+    parsName.push_back("Seventh");
+    parsName.push_back("Eighth");
+    parsName.push_back("Ninth");
+    
+   // std::cout << parsName.size() << std::endl;
+    
+    
+    
+    //std::cout << "tag A" << std::endl;
     
     for(int i =1; i<=_input1->GetNbinsX(); i++){
         
@@ -44,7 +60,7 @@ Disappearance::Disappearance(int kNuBarVar, std::string path, std::string filena
         
     }
     
-    std::cout << "tag B" << std::endl;
+    //std::cout << "tag B" << std::endl;
     
     for (int j =1; j <= Ene.size(); j++){
         
@@ -54,9 +70,44 @@ Disappearance::Disappearance(int kNuBarVar, std::string path, std::string filena
         bin4.push_back(_input4->GetBinContent(j));
     }
     
-    std::cout << "tag C" << std::endl;
+    //std::cout << "tag C" << std::endl;
     
+    file = new TFile(root_file.c_str());
     
+    file2 = new TFile(root_name.c_str(),"RECREATE");
+    pick = new TTree("z","");
+    
+    pars.resize(9,0);
+    
+    //outfile2d = new TFile("outfile2d.root","RECREATE");
+    
+    hFunction =  new TH2D("hf","",200,0,2,200,-0.5,2.5);
+    
+    tree = (TTree*)file->Get("t");
+    
+    tree->SetBranchAddress("First",&pars[0]);
+    tree->SetBranchAddress("Second",&pars[1]);
+    tree->SetBranchAddress("Third",&pars[2]);
+    tree->SetBranchAddress("Fourth",&pars[3]);
+    tree->SetBranchAddress("Fifth",&pars[4]);
+    tree->SetBranchAddress("Sixth",&pars[5]);
+    tree->SetBranchAddress("Seventh",&pars[6]);
+    tree->SetBranchAddress("Eighth",&pars[7]);
+    tree->SetBranchAddress("Ninth",&pars[8]);
+    
+    tree->GetEntry(0);
+
+    pick->Branch("First",&pars[0], "First/D");
+    pick->Branch("Second",&pars[1], "Second/D");
+    pick->Branch("Third",&pars[2], "Third/D");
+    pick->Branch("Fourth",&pars[3], "Fourth/D");
+    pick->Branch("Fifth",&pars[4], "Fifth/D");
+    pick->Branch("Sixth",&pars[5], "Sixth/D");
+    pick->Branch("Seventh",&pars[6], "Seventh/D");
+    pick->Branch("Eighth",&pars[7], "Eighth/D");
+    pick->Branch("Ninth",&pars[8], "Ninth/D");
+    
+    pick->Fill();
     
 }
 
@@ -197,40 +248,42 @@ double Disappearance::taylorinv(double x, std::vector<double>& par)
     //    printf("%f\n",par[i]);
     
     double sum = 0;
+//    std::cout <<"In taylorinv" << par.size() << std::endl;
+    
     for(int i=0; i<9; i++)
     {
-        
-        sum+=par[i]*pow(1/x,i);
+       // std::cout << pars[i] << std::endl;
+        sum+=par[i+9]*pow(1/x,i);
         
     }
-    //std::cout << "In taylorinv: " << "\t" << sum << std::endl;
+    std::cout << "In taylorinv: " << "\t" << sum << std::endl;
     return sum;
 }
 
 
 void Disappearance::taylor(char hist_type){
 
- 
+    
     
     for (int j =0; j < Ene.size(); j++){
-        double prob = taylorinv(Ene[j], coefs);
-        double  weight = prob*bin1[j] + prob*bin2[j] + prob*bin3[j] + prob*bin4[j];
-
+        
+//        std::cout << "In taylor" << currentPars.size() << std::endl;
+        
+        double prob = taylorinv(Ene[j], currentPars);
+        
+        //std::cout << Ene[j] << "," << prob << std::endl;
+        double  weight = prob*bin1[j]*sigma_cc(2,Ene[j]) + prob*bin2[j]*sigma_cc(-2, Ene[j]) + prob*bin3[j]*sigma_cc(2,Ene[j]) + prob*bin4[j]*sigma_cc(-2,Ene[j]);
+        
+        if(weight<0)
+            weight=1E-8;
+        
         if(hist_type == 'd'){
-            _Data->SetBinContent(Ene[j],weight);
+            _Data->SetBinContent(j+1,weight);
         }
         else if(hist_type == 'p'){
-            _Prediction->SetBinContent(Ene[j],weight);
-            
-//            TApplication *app = new TApplication("app",0,0);
-//            
-//            //PLOTTING
-//            TCanvas *c1 = new TCanvas("c1","Canvas",2000,1000);
-//            c1->SetTitle("Taylor Series Oscillation");
-//            _Prediction->Draw("e");
-//            c1->Update();
-//            app->Run(); // need this to give options for saving and zoom etc
-
+            //std::cout<< " weight " << weight << std::endl;
+            _Prediction->SetBinContent(j+1,weight);
+    
         }
         else{std::cout << "Invalid Hist Type" << std::endl;}
     }
@@ -239,23 +292,52 @@ void Disappearance::taylor(char hist_type){
 
 }
 
-std::vector<double> Disappearance::return_coef_pars(){
+
+
+
+void Disappearance::make_2d(){
     
-    return coefs;
+    
+    for(int i=0; i<tree->GetEntries(); i+=200)
+        //   for(int i=0; i<100; i++)
+    {
+        printf("N: %i\n",i);
+        tree->GetEntry(i);
+        
+        for(int j=1; j<=hFunction->GetNbinsX(); j++)
+        {
+            double E = hFunction->GetXaxis()->GetBinCenter(j);
+            double prob = function(pars,E);
+            if(prob<0&& E>0.4){
+                
+                std::cout << "maybe" << std::endl;
+                pick->Fill();
+            }
+            
+            
+            hFunction->Fill(E,prob);
+        }
+        
+    }
+    
+    pick->Write();
+    hFunction->Write();
+    file2->Close();
+    
+    //outfile2d->Close();
+    //hFunction->Draw("colz");
+    
     
 }
 
-void Disappearance::set_paras_d(int index, double val, char vector_type){
-    if(vector_type=='c'){
-        coefs[index] = val;
+double Disappearance::function(std::vector<double> pars, double E)
+{
+    double val = 0;
+    //loop starts at 9 as first 9 elements of pars == pmns variables
+    for(int i=9; i<pars.size(); i++)
+    {
+        val+=pars[i]*pow(1/E,i);
     }
     
-    else if(vector_type == 'p'){
-        coefs[index] = val;
-    }
-    
-    else{
-        std::cout << "Invalid command for vector_type. Please choose either 'c' or 'p'." << std::endl;
-    }
-    
+    return val;
 }
