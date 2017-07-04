@@ -21,7 +21,7 @@
 
 int main(){
 
-  int a = 5;
+  std::cout << "haha, it worked" << std::endl;
 
 //    //Siobhan's Test
 //      Nu_Fitter Test = Nu_Fitter(1, "t2kflux_2016_minus250kA.root", "enu_sk_numu", "enu_sk_numub", "enu_sk_nue", "enu_sk_nueb");
