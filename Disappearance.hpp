@@ -45,7 +45,7 @@ class Disappearance : public Nu_Fitter {
     
 public:
     
-    Disappearance(int kNuBarVar, std::string path, std::string filename, std::string filename2, std::string filename3, std::string filename4, int mass);
+    Disappearance(int kNuBarVar, std::string path, std::string filename, std::string filename2, std::string filename3, std::string filename4, int mass, std::string root_name, std::string root_file);
     ~Disappearance();
     void make_Prediction(char hist_type, int which);
     double series( double E);
@@ -54,9 +54,10 @@ public:
     double osci_prob( double E);
     double taylorinv(double x, std::vector<double>& par);
     void taylor(char hist_type);
-    //void fitinvE();
-    std::vector<double> return_coef_pars();
-    void set_paras_d(int index, double val, char vector_type);
+    void make_2d();
+    double function(std::vector<double> pars, double E);
+    
+
     
 private:
     
@@ -64,11 +65,19 @@ private:
     double dm_sq;
     double a;
     std::vector<double> Ene, invE, prob;
-    std::vector<double> coefs;
+    //std::vector<std::string> parsName;
+    //std::vector<double> coefs;
     std::vector<double> bin1;
     std::vector<double> bin2;
     std::vector<double> bin3;
     std::vector<double> bin4;
+    TFile* outfile2d;
+    TFile* file;
+    TFile* file2;
+    TTree* pick;
+    TH2D* hFunction;
+    TTree* tree;
+    std::vector<double> pars;
 
     
     
