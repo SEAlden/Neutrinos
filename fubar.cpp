@@ -15,6 +15,67 @@
 #include "Markov_Chain.hpp"
 #include "Disappearance.hpp"
 
+<<<<<<< HEAD
+int main(){
+  std::cout << "Hi there" << std::endl;
+//    //Siobhan's Test
+//      Nu_Fitter Test = Nu_Fitter(1, "t2kflux_2016_minus250kA.root", "enu_sk_numu", "enu_sk_numub", "enu_sk_nue", "enu_sk_nueb");
+//
+//     Test.make_sum('d','c', true);
+//
+//    Test.make_sum('p', 'c', true);
+//
+//
+//     Test.show_Prediction();
+//
+////
+
+
+//
+//
+//      std::cout << "LLH = " << Test1.getLLH(&Test2) << std::endl;
+//
+//      std::vector<double> params = Test1.return_cparam();
+//     // //
+//     // //
+//     // // //  Markov_Chain five = Markov_Chain(params, 10000, "osci_1_branch.root");
+//     Markov_Chain five = Markov_Chain(params, 10000, "test12.root");
+//     // //
+//     // // five.set_pars(1);// dm2
+//     five.set_pars(2);//theta23
+//     five.set_width(2,10e-6);
+//     five.set_pars(6);// delta
+//     five.set_width(6,10e-5);
+//     five.set_pars(8); // beta
+//     five.set_width(8,10e-6);
+//
+//     five.startMH(params, &Test1);
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // Appearance TestB = Appearance(1, "/home/yong/Neutrinos/Prob3++.20121225/T2Kflux2016/t2kflux_2016_minus250kA.root", "enu_sk_numu","enu_sk_numub","enu_sk_nue","enu_sk_nueb");
+    //
+////    //
+        //  Disappearance TestA = Disappearance(1, "t2kflux_2016_minus250kA.root", "enu_sk_numu", "enu_sk_numub","enu_sk_nue", "enu_sk_nueb", 2);
+        //
+        //  TestA.taylor('p');
+        //
+        //  TestA.make_sum('d', 'c', true);
+        //
+        //  std::cout << TestA.getLLH() << std::endl;
+        //
+        //  //TestA.show_Prediction();
+        //
+        //  std::vector<double> paramsA = TestA.return_cparam();
+        // //  std::vector<double> co = TestA.return_coef_pars();
+        // std::vector<std::string> str = TestA.return_sparam();
+        //
+        //  Markov_Chain five_2 = Markov_Chain(paramsA, str, 10000, "wtf_branch.root");
+=======
+>>>>>>> d4e6d701d002f16195ac6de6cba19801d7f2ad92
 
 int main(){
 
