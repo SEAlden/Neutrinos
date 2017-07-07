@@ -15,9 +15,6 @@
 #include "Markov_Chain.hpp"
 #include "Disappearance.hpp"
 
-<<<<<<< HEAD
-int main(){
-  std::cout << "Hi there" << std::endl;
 //    //Siobhan's Test
 //      Nu_Fitter Test = Nu_Fitter(1, "t2kflux_2016_minus250kA.root", "enu_sk_numu", "enu_sk_numub", "enu_sk_nue", "enu_sk_nueb");
 //
@@ -74,13 +71,11 @@ int main(){
         // std::vector<std::string> str = TestA.return_sparam();
         //
         //  Markov_Chain five_2 = Markov_Chain(paramsA, str, 10000, "wtf_branch.root");
-=======
->>>>>>> d4e6d701d002f16195ac6de6cba19801d7f2ad92
 
 int main(){
 
     // Andrew's Test
-  int a = 5;
+  
    Appearance plus = Appearance(1, "/home/yong/Neutrinos/Prob3++.20121225/T2Kflux2016/t2kflux_2016_plus250kA.root", "enu_sk_numu","enu_sk_numub","enu_sk_nue","enu_sk_nueb");
    Appearance minus = Appearance(1, "/home/yong/Neutrinos/Prob3++.20121225/T2Kflux2016/t2kflux_2016_minus250kA.root", "enu_sk_numu","enu_sk_numub","enu_sk_nue","enu_sk_nueb");
 
