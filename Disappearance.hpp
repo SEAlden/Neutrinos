@@ -62,7 +62,7 @@ public:
     
 private:
     
-    double L = 295;
+  double L;
     double dm_sq;
     double a;
     std::vector<double> Ene, invE, prob;
