@@ -35,8 +35,7 @@ Disappearance::Disappearance(int kNuBarVar, std::string path, std::string filena
     currentPars.push_back(-0.0569585);
     currentPars.push_back(0.0133551);
     currentPars.push_back(-0.000970247);
-    
-   // std::cout << currentPars.size()<< std::endl;
+   
     
     parsName.push_back("First");
     parsName.push_back("Second");
@@ -48,10 +47,8 @@ Disappearance::Disappearance(int kNuBarVar, std::string path, std::string filena
     parsName.push_back("Eighth");
     parsName.push_back("Ninth");
     
-   // std::cout << parsName.size() << std::endl;
     
-    
-    
+    L = 295; 
     //std::cout << "tag A" << std::endl;
     
     for(int i =1; i<=_input1->GetNbinsX(); i++){
