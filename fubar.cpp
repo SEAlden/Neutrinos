@@ -72,45 +72,61 @@
         //
         //  Markov_Chain five_2 = Markov_Chain(paramsA, str, 10000, "wtf_branch.root");
 
-int main(){
+int main(int argc, char** argv){
 
     // Andrew's Test
   
+<<<<<<< HEAD
    Appearance plus = Appearance(1, "/home/yong/Neutrinos/Prob3++.20121225/T2Kflux2016/t2kflux_2016_plus250kA.root", "enu_sk_numu","enu_sk_numub","enu_sk_nue","enu_sk_nueb");
    Appearance minus = Appearance(1, "/home/yong/Neutrinos/Prob3++.20121225/T2Kflux2016/t2kflux_2016_minus250kA.root", "enu_sk_numu","enu_sk_numub","enu_sk_nue","enu_sk_nueb");
+=======
+  char phenom_mode;
+  int scale;
+  bool vary_beta=false;
+  std::string filename;
+
+  std::cout << "Please enter a response/value for the following variable:" << std::endl;
+  std::cout << "Appearance or Disappearance? (a/d)";
+  std::cin >> phenom_mode;
+  std::cout << "Please enter a scale factor. (Enter 1 if scaling is not required)";
+  std::cin >> scale;
+
+   Appearance plus = Appearance(1, "t2kflux_2016_plus250kA.root", "enu_sk_numu","enu_sk_numub","enu_sk_nue","enu_sk_nueb");
+   Appearance minus = Appearance(1, "t2kflux_2016_minus250kA.root", "enu_sk_numu","enu_sk_numub","enu_sk_nue","enu_sk_nueb");
+>>>>>>> ayong
 
    plus.scale_factor(6);
-  //  plus.set_param(8,0.5,'c');
-  //  plus.set_param(8,1.0,'p');
-  //  minus.set_param(8,0.5,'c');
-  //  minus.set_param(8,1.0,'p');
-  //
-  //  plus.make_sum('f','a', true);// Data
-  //  plus.make_sum('p','a',true);
-  //  minus.make_sum('f','a', true);// Data
-  //  minus.make_sum('p','a',true);
-  //
-  //
+   plus.set_param(8,0.5,'c');
+   plus.set_param(8,1.0,'p');
+   minus.set_param(8,0.5,'c');
+   minus.set_param(8,1.0,'p');
+ 
+   plus.make_sum('f','a', true);// Data
+   plus.make_sum('p','a',true);
+   minus.make_sum('f','a', true);// Data
+   minus.make_sum('p','a',true);
+ 
+ 
   // //  plus.get_integral();
   // //  plus.get_integral(0,1.25);
   // //
   // //  minus.get_integral();
   // //  minus.get_integral(0,1.25);
   //
-  //  std::vector<double> params = plus.return_cparam();
-  //  std::vector<std::string> sparams = plus.return_sparam();
+  std::vector<double> params = plus.return_cparam();
+  std::vector<std::string> sparams = plus.return_sparam();
   //
-  //  Markov_Chain t1 = Markov_Chain(params, sparams, 1000000, "tdb3.root");
+  Markov_Chain t1 = Markov_Chain(params, sparams, 1000000, filename.c_str());
   //
-  // t1.set_param(3);//theta13
-  // t1.set_width(3,5E-3);
-  // t1.set_param(6);// delta
-  // t1.set_width(6,8E-2);
-  // t1.set_param(8); // beta
-  // t1.set_width(8,8E-2);
-  //
-  //
-  //  t1.startMH(params,&plus,&minus);
+  t1.set_param(3);//theta13
+  t1.set_width(3,5E-3);
+  t1.set_param(6);// delta
+  t1.set_width(6,8E-2);
+  t1.set_param(8); // beta
+  t1.set_width(8,8E-2);
+  
+  
+   t1.startMH(params,&plus,&minus);
 
 
 }

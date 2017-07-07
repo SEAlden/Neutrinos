@@ -62,7 +62,11 @@ public:
     
 private:
     
+<<<<<<< HEAD
   double L;
+=======
+    double L;
+>>>>>>> ayong
     double dm_sq;
     double a;
     std::vector<double> Ene, invE, prob;
