@@ -24,6 +24,8 @@ Disappearance::Disappearance(int kNuBarVar, std::string path, std::string filena
         std::cout << "wrong input" << std::endl;
     }
     
+    L=295;
+
     a = 1.27*L*dm_sq;
     
     currentPars.push_back(1.00043);
