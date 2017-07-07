@@ -24,6 +24,8 @@ Disappearance::Disappearance(int kNuBarVar, std::string path, std::string filena
         std::cout << "wrong input" << std::endl;
     }
     
+    L=295;
+
     a = 1.27*L*dm_sq;
     
     currentPars.push_back(1.00043);
@@ -47,8 +49,7 @@ Disappearance::Disappearance(int kNuBarVar, std::string path, std::string filena
     parsName.push_back("Eighth");
     parsName.push_back("Ninth");
     
-    
-    L = 295; 
+  
     //std::cout << "tag A" << std::endl;
     
     for(int i =1; i<=_input1->GetNbinsX(); i++){
