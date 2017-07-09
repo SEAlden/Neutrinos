@@ -1,0 +1,79 @@
+//
+//  fubar.cpp
+//
+//
+//  Created by Siobhan Alden & Andrew Yong on 12/06/2017.
+//
+//
+
+#include <stdio.h>
+#include <iostream>
+
+
+#include "Nu_Fitter.hpp"
+#include "Appearance.h"
+#include "Markov_Chain.hpp"
+#include "Disappearance.hpp"
+
+
+int main(int argc, char** argv){
+
+    // Andrew's Test
+
+  //command line parameters:
+  int scale = atoi(argv[1]);
+  double beta_d = atof(argv[2]);
+  double beta_p= atof(argv[3]);
+  std::string filename = argv[4];
+  filename += ".root";
+
+  Appearance plus = Appearance(1, "t2kflux_2016_plus250kA.root", "enu_sk_numu","enu_sk_numub","enu_sk_nue","enu_sk_nueb");
+  Appearance minus = Appearance(1, "t2kflux_2016_minus250kA.root", "enu_sk_numu","enu_sk_numub","enu_sk_nue","enu_sk_nueb");
+
+  std::cout << "Scale factor: " << scale << "\n_Data beta: " << beta_d << "\n_Prediction beta: " << beta_p << "\nFilename: " << filename << "\nVary _Prediction beta: " << argv[5] << std::endl;
+
+  //applying scale factor...
+  plus.scale_factor(scale);
+  minus.scale_factor(scale);
+
+  //applying changes to _Data's beta value 
+  plus.set_param(8,beta_d,'c');
+  minus.set_param(8,beta_d,'c');
+
+  //applying changes to _Prediction's beta value 
+  plus.set_param(8,beta_p,'p');
+  minus.set_param(8,beta_p,'p');
+
+
+  std::cout << "Filename: " << filename << std::endl;
+  
+
+ 
+   plus.make_sum('f','a', true);// Data
+   plus.make_sum('p','a',true);
+   minus.make_sum('f','a', true);// Data
+   minus.make_sum('p','a',true);
+  
+ 
+
+  std::vector<double> params = plus.return_cparam();
+  std::vector<std::string> sparams = plus.return_sparam();
+
+  Markov_Chain t1 = Markov_Chain(params, sparams, 100, filename.c_str());
+
+  t1.set_param(3);//theta13
+  t1.set_width(3,5E-3);
+  t1.set_param(6);// delta
+  t1.set_width(6,8E-2);
+
+  if(strcmp("yes",argv[5]) == 0){
+    std::cout << "Varying _Prediction beta..." << std::endl;
+    t1.set_param(8); // beta
+    t1.set_width(8,8E-2);
+  }
+  
+  
+   t1.startMH(params,&plus,&minus);
+
+
+}
