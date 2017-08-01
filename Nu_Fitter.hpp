@@ -46,7 +46,7 @@ public:
     
     void make_sum(char hist_type, char phenom_mode, bool oscillate);
     // applies probability to each raw histogram and then sums them up.
-    // Command: hist_type: 'f' for (fake/file) data, 'p' for prediction; phenom_mode: 'd' for disappearance; 'a' for appearance; oscillate: true for oscillation, false for no oscillation
+    // Command: hist_type: 'f' for (fake/file) data, 'p' for prediction, 'm' for measurement; phenom_mode: 'd' for disappearance; 'a' for appearance; oscillate: true for oscillation, false for no oscillation
     
     void print_kNu(); //tells user what value kNuBar has at the moment
     
