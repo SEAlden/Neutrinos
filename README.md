@@ -11,11 +11,19 @@ This README is designed to explain how one can use the classes developed to anal
 #########################
 INTRODUCTION & MOTIVATION
 #########################
+
 The set of classes are developed with two main objectives:
 
-1) From long baseline experiments in the near future, the value for various PMNS parameters may be further constrained. This is done by minimising the log likelihood (LLH) between the measured neutrino (and antineutrino) flux and the fit based on current (August 2017) values of PMNS parameters. This is done iteratively using a Markov Chain Monte Carlo (MCMC).
+1) From long baseline experiments in the near future, the value for various PMNS parameters may be further constrained. This is done by minimising the log likelihood (LLH) between the measured neutrino (and antineutrino) flux and the fit based on current (August 2017) values of PMNS parameters.
 
-2) Based on previous simulations, there is a clear distinction between the neutrino and antineutrino flux values, indicating the possibility of CPT and Lorentz symmetry violation. We propose an additional parameter, beta, that feeds into oscillation probability in attempt to account for this asymmetry.
+2) Based on previous simulations, there is a clear distinction between the neutrino and antineutrino flux values, indicating the possibility of CPT and Lorentz symmetry violation. New flux measurements of fluxes will provide grounds for measuring the delta CP phase factor. Further, we propose an additional parameter, beta, that feeds into oscillation probability in attempt to help account for this asymmetry.
+
+The improvement on standard PMNS parameters and the determination of the beta parameter are done iteratively using a Markov Chain Monte Carlo. The code is written using a combination of C++ and ROOT and can be compiled using the Makefile provided.
+
+To analyse Appearance phenomenon, enter the following command in the terminal:
+make appmain; ./appmain scale_factor_value
+
+To analyse Disappearance phenomenon, enter the following command in the terminal:
 
 
 #######
