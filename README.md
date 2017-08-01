@@ -43,11 +43,52 @@ Nu_Fitter
 This is the base class in which Appearance and Disappearance objects inherit mutual member variables and functions from.
 
 ##CONSTRUCTOR##
-The class constructor takes in an integer, kNuBarVar, which 
+
+The class constructor takes in an integer, kNuBarVar, which takes the value 1 by default, the filepath to the .root file and the four flux files for each neutrino and antineutrino beam. The specific names of the four flux files can be obtained by accessing the .root file via a TBrowser in the ROOT interactive environment.
+
+
+##########
+APPEARANCE
+##########
+
+The Appearance class simply exists for nomenclature reasons. This class only uses member variable and function of the base class, but its class type allows the Monte Carlo class to select the appropriate Markov Chain for the appearance phenomenon in neutrino oscillation.
+
+##CONSTRUCTOR##
+
+Just as a Nu_Fitter constructor, the Appearance constructor takes an integer value for the kNuBarVar variable, the filepath to the .root file and the four flux files within the .root file.
+
+
+#############
+DISAPPEARANCE
+#############
+
+##CONSTRUCTOR##
+
+
+
+############
+Markov_Chain
+############
+
+This class is designed to run Markov Chain Monte Carlo (MCMC) simulations. Using the Metropolis-Hastings algorithm, the MCMC simulation will produce a distribution of values that minimises the LLH between the fit and data. The constraint on the parameter values improve with higher number of iterations but at the cost of longer runtime.
+
+##CONSTRUCTOR##
+
+The Markov_Chain constructor takes four arguments:
+
+1) a vector containing the value of all neutrino oscillation parameters(PMNS and additionally proposed). This can be accessed using the return_cparam() member function of Nu_Fitter class.
+
+2) a vector containing the name of all neutrino oscillation parameters(PMNS and additionally proposed). This can be accessed using the return_sparam() member function of Nu_Fitter class.
+
+3) the number of iterations for the simulation.
+
+4) filename to be saved in the directory.
 
 ##OTHER DETAILS##
 
+The width (which is responsible for adjusting the parameter value within the neighbourhood of the Gaussian) can be manually tuned by using the set_with() function. Note that we have already tuned the width of each default parameter provided. From experience, the quality of the distribution of values depends sensitively to minor changes in the width, so proceed with caution.
 
+The member function apply_constraint() is a neat method of preventing the Metropolis-Hastings algorithm from choosing 'unphysical' values. If the user wishes to add an additional physical parameter, please ensure include a constraint in the member function in a similar fashion to pre-existing ones.
 
 ###############
 CONTACT DETAILS
