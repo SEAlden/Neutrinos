@@ -195,6 +195,26 @@ void Nu_Fitter::make_sum(char hist_type, char phenom_mode, bool oscillate){
             _Prediction->SetBinContent(i,weight);
             
         }
+
+        else if(hist_type == 'm'){ //  no probability for the _Prediction histogram
+            
+            if(phenom_mode == 'd'){ //Disappearance case
+	      weight = sigma_cc(2,E)*bin_content1 + sigma_cc(-2,E)*bin_content2 + sigma_cc(2,E)*bin_content3 + sigma_cc(-2,E)*bin_content4;
+            }
+            
+            else if(phenom_mode == 'a'){ //Appearance case
+                weight = sigma_cc(1,E)*bin_content1 +sigma_cc(-1,E)*bin_content2 + sigma_cc(1,E)*bin_content3 + sigma_cc(-1,E)*bin_content4;
+            }
+            
+            else{
+                std::cout << "make_sum() Error:\nInvalid osc_mode command." << std::endl;
+                weight = 0;
+            }
+            
+            _Data->SetBinContent(i,weight);
+             
+        }
+
         
         else{
             
@@ -299,7 +319,6 @@ std::vector<double> Nu_Fitter::return_pparam(){
 std::vector<std::string> Nu_Fitter::return_sparam(){
     return parsName;
 }
-
 void Nu_Fitter::set_param(int index, double val, char vector_type){
     if(vector_type=='c'){
         currentPars[index] = val;
