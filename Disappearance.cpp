@@ -6,11 +6,11 @@
 //
 //
 
-#include "Disappearance.hpp"
+#include "Disappearance.h"
 #include <iostream>
 #include <vector>
 
-Disappearance::Disappearance(int kNuBarVar, std::string path, std::string filename, std::string filename2, std::string filename3, std::string filename4, int mass):Nu_Fitter(kNuBarVar, path, filename, filename2, filename3, filename4){
+Disappearance::Disappearance(int kNuBarVar, std::string path, std::string filename, std::string filename2, std::string filename3, std::string filename4, int mass, double scale):Nu_Fitter(kNuBarVar, path, filename, filename2, filename3, filename4){
  
     if (mass == 1){
         dm_sq = currentPars[4];
@@ -25,7 +25,7 @@ Disappearance::Disappearance(int kNuBarVar, std::string path, std::string filena
     }
     
     L=295;
-
+    
     a = 1.27*L*dm_sq;
     
     currentPars.push_back(1.00043);
@@ -37,7 +37,8 @@ Disappearance::Disappearance(int kNuBarVar, std::string path, std::string filena
     currentPars.push_back(-0.0569585);
     currentPars.push_back(0.0133551);
     currentPars.push_back(-0.000970247);
-   
+    
+   // std::cout << currentPars.size()<< std::endl;
     
     parsName.push_back("First");
     parsName.push_back("Second");
@@ -49,7 +50,10 @@ Disappearance::Disappearance(int kNuBarVar, std::string path, std::string filena
     parsName.push_back("Eighth");
     parsName.push_back("Ninth");
     
-  
+   // std::cout << parsName.size() << std::endl;
+    
+    
+    
     //std::cout << "tag A" << std::endl;
     
     for(int i =1; i<=_input1->GetNbinsX(); i++){
@@ -62,52 +66,13 @@ Disappearance::Disappearance(int kNuBarVar, std::string path, std::string filena
     
     for (int j =1; j <= Ene.size(); j++){
         
-        bin1.push_back(_input1->GetBinContent(j));
-        //std::cout << j <<  bin1[j-1] << std::endl;
-        bin2.push_back(_input2->GetBinContent(j));
-        bin3.push_back(_input3->GetBinContent(j));
-        bin4.push_back(_input4->GetBinContent(j));
+        bin1.push_back(_input1->GetBinContent(j)*scale);
+        bin2.push_back(_input2->GetBinContent(j)*scale);
+        bin3.push_back(_input3->GetBinContent(j)*scale);
+        bin4.push_back(_input4->GetBinContent(j)*scale);
     }
     
-    //std::cout << "tag C" << std::endl;
-    
-   // file = new TFile(root_file.c_str());
-    
-//    file2 = new TFile(root_name.c_str(),"RECREATE");
-//    pick = new TTree("z","");
-//    
-//    pars.resize(9,0);
-//    
-    //outfile2d = new TFile("outfile2d.root","RECREATE");
-    
-    //hFunction =  new TH2D("hf","",200,0,2,200,-0.5,2.5);
-    
-    //tree = (TTree*)file->Get("t");
-//    
-//    tree->SetBranchAddress("First",&pars[0]);
-//    tree->SetBranchAddress("Second",&pars[1]);
-//    tree->SetBranchAddress("Third",&pars[2]);
-//    tree->SetBranchAddress("Fourth",&pars[3]);
-//    tree->SetBranchAddress("Fifth",&pars[4]);
-//    tree->SetBranchAddress("Sixth",&pars[5]);
-//    tree->SetBranchAddress("Seventh",&pars[6]);
-//    tree->SetBranchAddress("Eighth",&pars[7]);
-//    tree->SetBranchAddress("Ninth",&pars[8]);
-//    
-//    tree->GetEntry(0);
-//
-//    pick->Branch("First",&pars[0], "First/D");
-//    pick->Branch("Second",&pars[1], "Second/D");
-//    pick->Branch("Third",&pars[2], "Third/D");
-//    pick->Branch("Fourth",&pars[3], "Fourth/D");
-//    pick->Branch("Fifth",&pars[4], "Fifth/D");
-//    pick->Branch("Sixth",&pars[5], "Sixth/D");
-//    pick->Branch("Seventh",&pars[6], "Seventh/D");
-//    pick->Branch("Eighth",&pars[7], "Eighth/D");
-//    pick->Branch("Ninth",&pars[8], "Ninth/D");
-//    
-//    pick->Fill();
-//    
+ 
 }
 
 Disappearance::~Disappearance(){}
