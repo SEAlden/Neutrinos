@@ -21,7 +21,13 @@ The set of classes are developed with two main objectives:
 The improvement on standard PMNS parameters and the determination of the beta parameter are done iteratively using a Markov Chain Monte Carlo. The code is written using a combination of C++ and ROOT and can be compiled using the Makefile provided.
 
 To analyse Appearance phenomenon, enter the following command in the terminal:
-make appmain; ./appmain scale_factor_value
+make appmain; ./appmain scale_factor beta1 beta2 filename yes_no
+where,
+scale_factor: converts the flux/P.O.T data into purely flux data,
+beta1: is the beta value of the data (enter 1 by default),
+beta2: is the initial seed of the fit's beta value,
+filename: is the name the MCMC will be saved as,
+yes_no: is a Boolean to vary the fit's beta value.
 
 To analyse Disappearance phenomenon, enter the following command in the terminal:
 
@@ -34,7 +40,10 @@ CLASSES
 Nu_Fitter
 #########
 
+This is the base class in which Appearance and Disappearance objects inherit mutual member variables and functions from.
+
 ##CONSTRUCTOR##
+The class constructor takes in an integer, kNuBarVar, which 
 
 ##OTHER DETAILS##
 
